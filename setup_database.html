@@ -1,0 +1,164 @@
+<!-- setup_database.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Database Setup - SK Education</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        .logo { width:80px; height:80px; border-radius:50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #4361ee; margin:0 auto 20px; }
+        h1 { color: #4361ee; text-align: center; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: #e65100; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+        .btn { display: inline-block; background: #4361ee; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+        .btn:hover { background: #3046bf; }
+        .log { background: #f8f9fa; padding: 10px; margin: 5px 0; border-left: 3px solid #4361ee; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">SK</div>
+        <h1>🔥 Firebase Database Setup</h1>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEA_jznrLsOcIJ5jR0qmBQwigStJ4RiAw",
+            authDomain: "my-last-education.firebaseapp.com",
+            databaseURL: "https://my-last-education-default-rtdb.firebaseio.com",
+            projectId: "my-last-education",
+            storageBucket: "my-last-education.firebasestorage.app",
+            messagingSenderId: "916561394351",
+            appId: "1:916561394351:android:06445fc6d1de531e99f25a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const CATEGORIES = {
+            'science': 'Science',
+            'math': 'Mathematics',
+            'hindi': 'Hindi',
+            'sanskrit': 'Sanskrit',
+            'sst': 'Social Studies'
+        };
+
+        const SUBCATEGORIES = {
+            'science': ['physics', 'chemistry', 'biology'],
+            'math': ['objective', 'subjective', 'notes'],
+            'hindi': ['grammar', 'book_notes', 'imp_question'],
+            'sanskrit': ['grammar', 'book_notes', 'imp_question'],
+            'sst': ['history', 'geography', 'civics', 'economics']
+        };
+
+        const SUBCATEGORY_NAMES = {
+            'physics': 'Physics',
+            'chemistry': 'Chemistry',
+            'biology': 'Biology',
+            'objective': 'Objective',
+            'subjective': 'Subjective',
+            'notes': 'Notes',
+            'grammar': 'Grammar',
+            'book_notes': 'Book Notes',
+            'imp_question': 'Important Questions',
+            'history': 'History',
+            'geography': 'Geography',
+            'civics': 'Civics',
+            'economics': 'Economics'
+        };
+
+        const output = document.getElementById('output');
+        
+        function log(message, type = 'info') {
+            const color = type === 'success' ? 'green' : type === 'error' ? 'red' : '#4361ee';
+            output.innerHTML += `<div class="log" style="border-left-color: ${color}">${message}</div>`;
+        }
+
+        async function setupDatabase() {
+            log('<h3>Testing connection...</h3>');
+            
+            try {
+                // Test connection
+                await db.ref('.info/connected').once('value');
+                log('✅ Connected to Firebase successfully!', 'success');
+                
+                // Check if already setup
+                const existing = await db.ref('categories').once('value');
+                if (existing.val()) {
+                    log('⚠️ Database already has data. Clearing...', 'warning');
+                    await db.ref('categories').remove();
+                    await db.ref('users').remove();
+                }
+                
+                // Create categories structure
+                log('<h3>Creating categories...</h3>');
+                for (let catKey in CATEGORIES) {
+                    for (let subKey of SUBCATEGORIES[catKey]) {
+                        await db.ref(`categories/${catKey}/${subKey}/info`).set({
+                            name: SUBCATEGORY_NAMES[subKey],
+                            created_at: new Date().toISOString()
+                        });
+                        log(`✓ Created: ${catKey} → ${SUBCATEGORY_NAMES[subKey]}`, 'success');
+                    }
+                }
+                
+                // Create test user
+                log('<h3>Creating test user...</h3>');
+                const testUser = {
+                    user_id: 'testuser',
+                    email: 'test@example.com',
+                    password: btoa('test123'), // Simple encoding
+                    name: 'Test User',
+                    created_at: new Date().toISOString()
+                };
+                
+                await db.ref('users').push(testUser);
+                log('✓ Test user created', 'success');
+                log('User ID: testuser', 'info');
+                log('Password: test123', 'info');
+                
+                // Add sample items
+                log('<h3>Adding sample items...</h3>');
+                
+                const samples = [
+                    ['science', 'physics', 'pdf', 'Physics Chapter 1 - Motion', 'Complete notes on motion', 'https://example.com/physics-motion.pdf'],
+                    ['science', 'chemistry', 'pdf', 'Chemistry - Periodic Table', 'Complete periodic table guide', 'https://example.com/periodic-table.pdf'],
+                    ['science', 'biology', 'pdf', 'Biology - Cell Structure', 'Detailed notes on cells', 'https://example.com/cell-biology.pdf']
+                ];
+                
+                for (let sample of samples) {
+                    const itemData = {
+                        type: sample[2],
+                        title: sample[3],
+                        description: sample[4],
+                        fileUrl: sample[5],
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    await db.ref(`categories/${sample[0]}/${sample[1]}/items`).push(itemData);
+                    log(`✓ Added: ${sample[3]}`, 'success');
+                }
+                
+                log('<h3 class="success">✅ Setup Complete!</h3>', 'success');
+                log('<a href="index.html" class="btn">Go to Login Page</a>');
+                
+            } catch (err) {
+                log('❌ Cannot connect to Firebase. Please check:', 'error');
+                log(`Database URL: ${firebaseConfig.databaseURL}`, 'info');
+                log('Firebase Rules are set to allow read/write', 'info');
+                log('<p>Temporary rules for setup:</p>', 'info');
+                log('<pre>{\n  "rules": {\n    ".read": true,\n    ".write": true\n  }\n}</pre>', 'info');
+                log('<a href="" class="btn">Retry</a>', 'info');
+                console.error(err);
+            }
+        }
+
+        setupDatabase();
+    </script>
+</body>
+</html>

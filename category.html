@@ -1,0 +1,206 @@
+<!-- category.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category - SK Education</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:Arial; }
+        body { background:#f5f5f5; }
+        .header { 
+            background:white; 
+            padding:15px 30px; 
+            box-shadow:0 2px 10px rgba(0,0,0,0.1); 
+            display:flex; 
+            align-items:center; 
+            gap:20px; 
+        }
+        .header-left {
+            display:flex;
+            align-items:center;
+            gap:15px;
+        }
+        .logo-image {
+            width:40px;
+            height:40px;
+            border-radius:50%;
+            object-fit:cover;
+            border:2px solid #4361ee;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #4361ee;
+        }
+        .back-btn { 
+            background:#f0f0f0; 
+            padding:8px 15px; 
+            border-radius:20px; 
+            text-decoration:none; 
+            color:#333; 
+        }
+        .header h1 { 
+            font-size:20px; 
+            color:#333; 
+            margin:0;
+        }
+        .container { max-width:600px; margin:0 auto; padding:20px; }
+        h2 { margin-bottom:20px; color:#333; }
+        .sub-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }
+        .sub-card { 
+            background:white; 
+            padding:25px; 
+            border-radius:15px; 
+            text-align:center; 
+            text-decoration:none; 
+            color:#333; 
+            display:block; 
+            transition:0.3s; 
+        }
+        .sub-card:hover { 
+            transform:translateY(-3px); 
+            box-shadow:0 5px 20px rgba(67,97,238,0.2); 
+        }
+        .sub-icon { font-size:35px; margin-bottom:10px; }
+        .sub-name { font-size:16px; font-weight:bold; margin-bottom:5px; }
+        .sub-count { font-size:12px; color:#888; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-image">SK</div>
+            <a href="dashboard.html" class="back-btn">← Back</a>
+        </div>
+        <h1 id="categoryName"></h1>
+    </div>
+    
+    <div class="container">
+        <h2>📂 Subcategories</h2>
+        <div class="sub-grid" id="subGrid">
+            Loading...
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEA_jznrLsOcIJ5jR0qmBQwigStJ4RiAw",
+            authDomain: "my-last-education.firebaseapp.com",
+            databaseURL: "https://my-last-education-default-rtdb.firebaseio.com",
+            projectId: "my-last-education",
+            storageBucket: "my-last-education.firebasestorage.app",
+            messagingSenderId: "916561394351",
+            appId: "1:916561394351:android:06445fc6d1de531e99f25a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const CATEGORIES = {
+            'science': 'Science',
+            'math': 'Mathematics',
+            'hindi': 'Hindi',
+            'sanskrit': 'Sanskrit',
+            'sst': 'Social Studies'
+        };
+
+        const SUBCATEGORIES = {
+            'science': {
+                'physics': 'Physics',
+                'chemistry': 'Chemistry', 
+                'biology': 'Biology'
+            },
+            'math': {
+                'objective': 'Objective',
+                'subjective': 'Subjective', 
+                'notes': 'Notes'
+            },
+            'hindi': {
+                'grammar': 'Grammar',
+                'book_notes': 'Book Notes',
+                'imp_question': 'Important Questions'
+            },
+            'sanskrit': {
+                'grammar': 'Grammar',
+                'book_notes': 'Book Notes',
+                'imp_question': 'Important Questions'
+            },
+            'sst': {
+                'history': 'History',
+                'geography': 'Geography',
+                'civics': 'Civics',
+                'economics': 'Economics'
+            }
+        };
+
+        const SUBCATEGORY_ICONS = {
+            'physics': '⚡',
+            'chemistry': '🧪',
+            'biology': '🧬',
+            'objective': 'x²',
+            'subjective': '📐',
+            'notes': '📓',
+            'grammar': '📝',
+            'book_notes': '📖',
+            'imp_question': '✍️',
+            'history': '🏛️',
+            'geography': '🗺️',
+            'civics': '⚖️',
+            'economics': '📊'
+        };
+
+        // Check login
+        if (!sessionStorage.getItem('user_id')) {
+            window.location.href = 'index.html';
+        }
+
+        // Get category from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const cat = urlParams.get('cat');
+
+        if (!cat || !CATEGORIES[cat]) {
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('categoryName').textContent = CATEGORIES[cat];
+
+        // Load subcategories
+        async function loadSubcategories() {
+            try {
+                const data = await db.ref(`categories/${cat}`).once('value');
+                const categoryData = data.val() || {};
+                const subs = SUBCATEGORIES[cat];
+                let html = '';
+                
+                for (let [key, name] of Object.entries(subs)) {
+                    let count = 0;
+                    if (categoryData[key] && categoryData[key].items) {
+                        count = Object.keys(categoryData[key].items).length;
+                    }
+                    
+                    const icon = SUBCATEGORY_ICONS[key] || '📄';
+                    
+                    html += `
+                        <a href="subcategory.html?cat=${cat}&sub=${key}" class="sub-card">
+                            <div class="sub-icon">${icon}</div>
+                            <div class="sub-name">${name}</div>
+                            <div class="sub-count">${count} items</div>
+                        </a>
+                    `;
+                }
+                
+                document.getElementById('subGrid').innerHTML = html;
+            } catch (err) {
+                console.error('Error loading subcategories:', err);
+                document.getElementById('subGrid').innerHTML = 'Error loading subcategories';
+            }
+        }
+
+        loadSubcategories();
+    </script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!-- admin_category.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - SK Education</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:Arial; }
+        body { background:#f5f5f5; padding:20px; }
+        .container { max-width:600px; margin:0 auto; }
+        .header { 
+            background:white; 
+            padding:20px; 
+            border-radius:10px; 
+            margin-bottom:20px; 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center;
+        }
+        .header-left {
+            display:flex;
+            align-items:center;
+            gap:15px;
+        }
+        .header-logo {
+            width:40px;
+            height:40px;
+            border-radius:50%;
+            object-fit:cover;
+            border:2px solid #4361ee;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #4361ee;
+        }
+        .header h2 { 
+            color:#4361ee; 
+            margin:0;
+        }
+        .nav { 
+            display:flex; 
+            gap:5px; 
+            margin-bottom:20px; 
+            flex-wrap:wrap; 
+        }
+        .nav a { 
+            background:white; 
+            padding:10px 15px; 
+            border-radius:8px; 
+            text-decoration:none; 
+            color:#333; 
+            flex:1;
+            text-align:center;
+        }
+        .nav a.active { 
+            background:#4361ee; 
+            color:white; 
+        }
+        .message { 
+            background:#e8f5e9; 
+            color:#2e7d32; 
+            padding:10px; 
+            border-radius:8px; 
+            margin-bottom:20px; 
+            text-align:center; 
+            display:none;
+        }
+        .section { 
+            background:white; 
+            padding:20px; 
+            border-radius:10px; 
+            margin-bottom:20px; 
+        }
+        .form-group { margin-bottom:15px; }
+        label { 
+            display:block; 
+            margin-bottom:5px; 
+            color:#555; 
+            font-weight:bold; 
+        }
+        select, input, textarea { 
+            width:100%; 
+            padding:12px; 
+            border:2px solid #e0e0e0; 
+            border-radius:8px; 
+        }
+        .type-selector { 
+            display:flex; 
+            gap:10px; 
+            margin-bottom:20px; 
+        }
+        .type-option { 
+            flex:1; 
+            text-align:center; 
+            padding:12px; 
+            border:2px solid #e0e0e0; 
+            border-radius:8px; 
+            cursor:pointer; 
+        }
+        .type-option.selected { 
+            background:#4361ee; 
+            color:white; 
+            border-color:#4361ee; 
+        }
+        .btn { 
+            width:100%; 
+            padding:14px; 
+            background:#4361ee; 
+            color:white; 
+            border:none; 
+            border-radius:8px; 
+            cursor:pointer; 
+        }
+        .item { 
+            background:#f8f9fa; 
+            padding:15px; 
+            border-radius:8px; 
+            margin-bottom:10px; 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+        }
+        .delete { 
+            background:#ffebee; 
+            color:#c62828; 
+            padding:5px 10px; 
+            border-radius:5px; 
+            text-decoration:none; 
+            cursor:pointer;
+        }
+        .sub-title { 
+            font-size:16px; 
+            font-weight:bold; 
+            margin:15px 0 10px; 
+            padding-bottom:5px; 
+            border-bottom:2px solid #e0e0e0; 
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-logo">SK</div>
+                <h2 id="categoryTitle"></h2>
+            </div>
+            <a href="admin.html" style="color:#4361ee;" onclick="logout()">Logout</a>
+        </div>
+        
+        <div class="nav" id="categoryNav"></div>
+        
+        <div id="message" class="message"></div>
+        
+        <!-- Add Form -->
+        <div class="section">
+            <h3>Add New Item</h3>
+            <form id="addForm">
+                <div class="form-group">
+                    <label>Subcategory *</label>
+                    <select id="subcategory" required>
+                        <option value="">-- Select Subcategory --</option>
+                    </select>
+                </div>
+                
+                <div class="type-selector">
+                    <div class="type-option selected" onclick="selectType('pdf')" id="pdfOpt">📄 PDF</div>
+                    <div class="type-option" onclick="selectType('video')" id="videoOpt">🎥 Video</div>
+                </div>
+                <input type="hidden" id="typeField" value="pdf">
+                
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label id="urlLabel">PDF URL *</label>
+                    <input type="url" id="fileUrl" placeholder="https://..." required>
+                </div>
+                
+                <button type="submit" class="btn">Add Item</button>
+            </form>
+        </div>
+        
+        <!-- Items List -->
+        <div class="section">
+            <h3>Current Items</h3>
+            <div id="itemsList">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEA_jznrLsOcIJ5jR0qmBQwigStJ4RiAw",
+            authDomain: "my-last-education.firebaseapp.com",
+            databaseURL: "https://my-last-education-default-rtdb.firebaseio.com",
+            projectId: "my-last-education",
+            storageBucket: "my-last-education.firebasestorage.app",
+            messagingSenderId: "916561394351",
+            appId: "1:916561394351:android:06445fc6d1de531e99f25a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const CATEGORIES = {
+            'science': 'Science',
+            'math': 'Mathematics',
+            'hindi': 'Hindi',
+            'sanskrit': 'Sanskrit',
+            'sst': 'Social Studies'
+        };
+
+        const SUBCATEGORIES = {
+            'science': {
+                'physics': 'Physics',
+                'chemistry': 'Chemistry', 
+                'biology': 'Biology'
+            },
+            'math': {
+                'objective': 'Objective',
+                'subjective': 'Subjective', 
+                'notes': 'Notes'
+            },
+            'hindi': {
+                'grammar': 'Grammar',
+                'book_notes': 'Book Notes',
+                'imp_question': 'Important Questions'
+            },
+            'sanskrit': {
+                'grammar': 'Grammar',
+                'book_notes': 'Book Notes',
+                'imp_question': 'Important Questions'
+            },
+            'sst': {
+                'history': 'History',
+                'geography': 'Geography',
+                'civics': 'Civics',
+                'economics': 'Economics'
+            }
+        };
+
+        // Check admin login
+        if (!sessionStorage.getItem('admin_logged_in')) {
+            window.location.href = 'admin.html';
+        }
+
+        // Get category from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let cat = urlParams.get('cat');
+        if (!cat || !CATEGORIES[cat]) {
+            cat = 'science';
+        }
+
+        document.getElementById('categoryTitle').textContent = CATEGORIES[cat];
+
+        // Build category navigation
+        let navHtml = '';
+        for (let [key, name] of Object.entries(CATEGORIES)) {
+            navHtml += `<a href="?cat=${key}" class="${cat === key ? 'active' : ''}">${name}</a>`;
+        }
+        document.getElementById('categoryNav').innerHTML = navHtml;
+
+        // Build subcategory dropdown
+        let subOptions = '<option value="">-- Select Subcategory --</option>';
+        for (let [key, name] of Object.entries(SUBCATEGORIES[cat])) {
+            subOptions += `<option value="${key}">${name}</option>`;
+        }
+        document.getElementById('subcategory').innerHTML = subOptions;
+
+        function selectType(type) {
+            document.getElementById('pdfOpt').classList.remove('selected');
+            document.getElementById('videoOpt').classList.remove('selected');
+            document.getElementById(type + 'Opt').classList.add('selected');
+            document.getElementById('typeField').value = type;
+            
+            if (type === 'pdf') {
+                document.getElementById('urlLabel').textContent = 'PDF URL *';
+                document.getElementById('fileUrl').placeholder = 'https://example.com/file.pdf';
+            } else {
+                document.getElementById('urlLabel').textContent = 'YouTube URL *';
+                document.getElementById('fileUrl').placeholder = 'https://youtube.com/watch?v=...';
+            }
+        }
+
+        function showMessage(msg, isError = false) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.style.display = 'block';
+            msgDiv.textContent = msg;
+            msgDiv.style.background = isError ? '#ffebee' : '#e8f5e9';
+            msgDiv.style.color = isError ? '#c62828' : '#2e7d32';
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Add item
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const sub = document.getElementById('subcategory').value;
+            const type = document.getElementById('typeField').value;
+            const title = document.getElementById('title').value;
+            const desc = document.getElementById('description').value;
+            const fileUrl = document.getElementById('fileUrl').value;
+            
+            if (!sub || !type || !title || !fileUrl) {
+                showMessage('Please fill all fields', true);
+                return;
+            }
+            
+            try {
+                const itemData = {
+                    type: type,
+                    title: title,
+                    description: desc,
+                    fileUrl: fileUrl,
+                    created_at: new Date().toISOString()
+                };
+                
+                await db.ref(`categories/${cat}/${sub}/items`).push(itemData);
+                showMessage('Item added successfully!');
+                
+                // Reset form
+                document.getElementById('title').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('fileUrl').value = '';
+                
+            } catch (err) {
+                console.error(err);
+                showMessage('Failed to add item', true);
+            }
+        });
+
+        // Load and display items
+        db.ref(`categories/${cat}`).on('value', (snap) => {
+            const data = snap.val();
+            let html = '';
+            
+            if (data) {
+                for (let [subKey, subData] of Object.entries(SUBCATEGORIES[cat])) {
+                    if (data[subKey] && data[subKey].items) {
+                        const items = data[subKey].items;
+                        const itemCount = Object.keys(items).length;
+                        
+                        if (itemCount > 0) {
+                            html += `<div class="sub-title">📁 ${subData} (${itemCount})</div>`;
+                            
+                            for (let itemKey in items) {
+                                html += `
+                                    <div class="item">
+                                        <div>
+                                            <strong>${escapeHtml(items[itemKey].title)}</strong><br>
+                                            <small>${items[itemKey].type}</small>
+                                        </div>
+                                        <a onclick="deleteItem('${subKey}', '${itemKey}')" class="delete">Delete</a>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            document.getElementById('itemsList').innerHTML = html || '<p>No items found</p>';
+        });
+
+        window.deleteItem = async function(sub, item) {
+            if (confirm('Delete this item?')) {
+                try {
+                    await db.ref(`categories/${cat}/${sub}/items/${item}`).remove();
+                    showMessage('Item deleted!');
+                } catch (err) {
+                    showMessage('Failed to delete item', true);
+                }
+            }
+        };
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function logout() {
+            sessionStorage.removeItem('admin_logged_in');
+        }
+    </script>
+</body>
+</html>

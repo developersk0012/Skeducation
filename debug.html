@@ -1,0 +1,79 @@
+<!-- debug.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SK Education - Debug Info</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        .logo { width:80px; height:80px; border-radius:50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #4361ee; margin-bottom:20px; }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">SK</div>
+        <h1>🔥 SK Education - Debug Info</h1>
+
+        <h2>1. Firebase Configuration:</h2>
+        <div id="firebaseConfig"></div>
+
+        <h2>2. Connection Test:</h2>
+        <div id="connectionTest">Testing...</div>
+
+        <h2>3. Categories:</h2>
+        <pre id="categories">Loading...</pre>
+
+        <h2>4. Server Time:</h2>
+        <div id="serverTime"></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEA_jznrLsOcIJ5jR0qmBQwigStJ4RiAw",
+            authDomain: "my-last-education.firebaseapp.com",
+            databaseURL: "https://my-last-education-default-rtdb.firebaseio.com",
+            projectId: "my-last-education",
+            storageBucket: "my-last-education.firebasestorage.app",
+            messagingSenderId: "916561394351",
+            appId: "1:916561394351:android:06445fc6d1de531e99f25a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Display Firebase Config
+        document.getElementById('firebaseConfig').innerHTML = `
+            Database URL: ${firebaseConfig.databaseURL}<br>
+            Project ID: ${firebaseConfig.projectId}<br>
+        `;
+
+        // Test Connection
+        db.ref('.info/connected').on('value', (snap) => {
+            if (snap.val() === true) {
+                document.getElementById('connectionTest').innerHTML = '<span class="success">✓ Connected Successfully</span>';
+            } else {
+                document.getElementById('connectionTest').innerHTML = '<span class="error">✗ Connection Failed</span>';
+            }
+        });
+
+        // Load Categories
+        const CATEGORIES = {
+            'science': 'Science',
+            'math': 'Mathematics',
+            'hindi': 'Hindi',
+            'sanskrit': 'Sanskrit',
+            'sst': 'Social Studies'
+        };
+        
+        document.getElementById('categories').textContent = JSON.stringify(CATEGORIES, null, 2);
+
+        // Server Time
+        document.getElementById('serverTime').textContent = new Date().toString();
+    </script>
+</body>
+</html>

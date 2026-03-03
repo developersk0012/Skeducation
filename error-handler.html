@@ -1,0 +1,82 @@
+<!-- error-handler.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error - SK Education</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { 
+            background: linear-gradient(135deg, #667eea, #764ba2); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding:20px;
+        }
+        .error-box { 
+            background: white; 
+            padding: 50px; 
+            border-radius: 20px; 
+            text-align: center; 
+            max-width:500px;
+            width:100%;
+        }
+        .logo-image {
+            width:70px;
+            height:70px;
+            border-radius:50%;
+            object-fit:cover;
+            border:3px solid #c62828;
+            margin-bottom:20px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #c62828;
+            margin: 0 auto 20px;
+        }
+        h1 { 
+            color: #c62828; 
+            margin-bottom: 15px; 
+        }
+        p { 
+            color: #666; 
+            margin-bottom: 30px; 
+            font-size:16px;
+        }
+        .btn { 
+            display: inline-block; 
+            background: #4361ee; 
+            color: white; 
+            padding: 12px 30px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #3046bf;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-box">
+        <div class="logo-image">!</div>
+        <h1 id="errorTitle">500 - Server Error</h1>
+        <p id="errorMessage">Sorry, something went wrong. Please try again later.</p>
+        <a href="index.html" class="btn">Go to Home</a>
+        <a href="javascript:history.back()" class="btn" style="background:#666;">Go Back</a>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code') || '500';
+        
+        if (code === '404') {
+            document.getElementById('errorTitle').textContent = '404 - Page Not Found';
+            document.querySelector('.logo-image').style.borderColor = '#e65100';
+            document.querySelector('.logo-image').style.color = '#e65100';
+        }
+    </script>
+</body>
+</html>

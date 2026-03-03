@@ -1,0 +1,62 @@
+<!-- welcome.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - SK Education</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:Arial; }
+        body { background:#f5f5f5; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:15px; }
+        .welcome-box { 
+            background:white; 
+            width:100%; 
+            max-width:400px; 
+            padding:40px; 
+            border-radius:20px; 
+            box-shadow:0 10px 30px rgba(0,0,0,0.1); 
+            text-align:center; 
+        }
+        .logo-image {
+            width:80px;
+            height:80px;
+            border-radius:50%;
+            object-fit:cover;
+            border:3px solid #4361ee;
+            margin-bottom:20px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #4361ee;
+            margin: 0 auto 20px;
+        }
+        h1 { color:#4361ee; margin-bottom:15px; }
+        p { color:#666; margin-bottom:30px; line-height:1.6; }
+        .btn { 
+            display:inline-block; 
+            padding:14px 30px; 
+            background:#4361ee; 
+            color:white; 
+            text-decoration:none; 
+            border-radius:10px; 
+            font-weight:600; 
+            transition:0.3s; 
+        }
+        .btn:hover { 
+            background:#3046bf; 
+            transform:translateY(-2px); 
+            box-shadow:0 5px 15px rgba(67,97,238,0.3); 
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-box">
+        <div class="logo-image">SK</div>
+        <h1>Welcome to SK Education!</h1>
+        <p>Thank you for joining us. Start your learning journey today with our comprehensive study materials.</p>
+        <a href="dashboard.html" class="btn">Go to Dashboard</a>
+    </div>
+</body>
+</html>
