@@ -1,4 +1,3 @@
-<!-- subcategory.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +13,9 @@
             box-shadow:0 2px 10px rgba(0,0,0,0.1); 
             display:flex; 
             align-items:center; 
-            gap:20px; 
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:10px;
         }
         .header-left {
             display:flex;
@@ -51,6 +52,17 @@
             font-size:13px; 
             color:#666; 
             font-weight:normal; 
+        }
+        .whatsapp-btn {
+            background:#25D366;
+            color:white;
+            padding:8px 15px;
+            border-radius:20px;
+            text-decoration:none;
+            font-size:13px;
+            display:flex;
+            align-items:center;
+            gap:5px;
         }
         .container { max-width:600px; margin:0 auto; padding:20px; }
         .tabs { 
@@ -113,6 +125,16 @@
             border-radius:15px; 
         }
         .hidden { display:none; }
+        .footer {
+            text-align:center;
+            padding:20px;
+            color:#999;
+            font-size:13px;
+        }
+        @media (max-width:480px) {
+            .header { flex-direction:column; align-items:stretch; }
+            .item { flex-direction:column; align-items:center; text-align:center; }
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -124,6 +146,7 @@
             <a href="#" id="backLink" class="back-btn">← Back</a>
         </div>
         <h1 id="subcategoryName"></h1>
+        <a href="https://whatsapp.com/channel/0029Vb8BQT0Fsn0gjPxlA10j" target="_blank" class="whatsapp-btn">📱 WhatsApp</a>
     </div>
     
     <div class="container">
@@ -134,6 +157,10 @@
         
         <div id="pdfGrid"></div>
         <div id="videoGrid" class="hidden"></div>
+    </div>
+
+    <div class="footer">
+        © 2026 SK Education. All Rights Reserved.
     </div>
 
     <script>
@@ -187,18 +214,13 @@
             }
         };
 
-        // Check login
-        if (!sessionStorage.getItem('user_id')) {
-            window.location.href = 'index.html';
-        }
-
         // Get parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
         const cat = urlParams.get('cat');
         const sub = urlParams.get('sub');
 
         if (!cat || !sub || !CATEGORIES[cat] || !SUBCATEGORIES[cat] || !SUBCATEGORIES[cat][sub]) {
-            window.location.href = 'dashboard.html';
+            window.location.href = 'index.html';
         }
 
         document.getElementById('subcategoryName').innerHTML = `
