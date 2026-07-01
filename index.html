@@ -4,168 +4,360 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SK Education - Class 10 Study Materials</title>
+    <link rel="manifest" href="manifest.json">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:Arial; }
-        body { background:#f5f5f5; }
-        .header { 
-            background:white; 
-            padding:15px 30px; 
-            box-shadow:0 2px 10px rgba(0,0,0,0.1); 
-            display:flex; 
-            justify-content:space-between; 
-            align-items:center;
-            flex-wrap:wrap;
-            gap:10px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Install Banner */
+        .install-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            animation: slideDown 0.5s ease;
+        }
+
+        .install-banner.show {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .install-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .install-banner-icon {
+            font-size: 28px;
+        }
+
+        .install-banner-text {
+            font-size: 14px;
+        }
+
+        .install-banner-text strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        .install-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .install-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .install-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 10px;
+            border-radius: 50%;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
         .logo-container {
-            display:flex;
-            align-items:center;
-            gap:15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
+
         .logo-image {
-            width:50px;
-            height:50px;
-            border-radius:50%;
-            object-fit:cover;
-            border:2px solid #4361ee;
-            background: #f0f0f0;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            color: #4361ee;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
+
         .logo-text {
-            font-size:22px;
-            font-weight:bold;
-            color:#4361ee;
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
         .header-actions {
-            display:flex;
-            align-items:center;
-            gap:15px;
-            flex-wrap:wrap;
-        }
-        .whatsapp-btn {
-            background:#25D366;
-            color:white;
-            padding:10px 20px;
-            border-radius:25px;
-            text-decoration:none;
-            font-weight:bold;
-            display:flex;
-            align-items:center;
-            gap:8px;
-            transition:0.3s;
-        }
-        .whatsapp-btn:hover {
-            transform:scale(1.05);
-            box-shadow:0 3px 15px rgba(37,211,102,0.4);
-        }
-        .help-btn {
-            background:#f72585;
-            color:white;
-            border:none;
-            padding:8px 15px;
-            border-radius:20px;
-            cursor:pointer;
-        }
-        .container { max-width:600px; margin:0 auto; padding:20px; }
-        h1 { 
-            text-align:center; 
-            margin-bottom:10px; 
-            color:#333;
-            font-size:24px;
-        }
-        .subtitle {
-            text-align:center;
-            color:#666;
-            margin-bottom:25px;
-            font-size:14px;
-        }
-        .categories-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }
-        .category-card { 
-            background:white; 
-            border-radius:15px; 
-            padding:25px; 
-            text-align:center; 
-            text-decoration:none; 
-            color:#333; 
-            box-shadow:0 2px 10px rgba(0,0,0,0.05); 
-            display:block; 
-            transition:0.3s; 
-        }
-        .category-card:hover { 
-            transform:translateY(-3px); 
-            box-shadow:0 5px 20px rgba(67,97,238,0.2); 
-        }
-        .category-icon { font-size:40px; margin-bottom:10px; }
-        .category-name { font-size:16px; font-weight:bold; margin-bottom:5px; }
-        .category-count { font-size:12px; color:#888; }
-        .help-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .help-modal.active {
             display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .help-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            font-size: 14px;
         }
-        .help-content h3 {
-            color: #4361ee;
-            margin-bottom: 20px;
+
+        .whatsapp-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
         }
-        .help-content input,
-        .help-content textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-        }
-        .help-content button {
-            background: #4361ee;
+
+        .help-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
             border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
             cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            font-size: 14px;
+            text-decoration: none;
         }
-        .close-modal {
-            float: right;
+
+        .help-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 40px 20px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 20px;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 20px 30px;
+        }
+
+        .section-title {
             font-size: 24px;
-            cursor: pointer;
+            font-weight: 700;
+            color: #333;
+            margin: 30px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
+        .section-title span {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .category-card:hover::before {
+            opacity: 1;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .category-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .category-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .category-card:nth-child(1) .category-icon { animation: float 3s ease-in-out infinite; }
+        .category-card:nth-child(2) .category-icon { animation: float 3s ease-in-out infinite 0.5s; }
+        .category-card:nth-child(3) .category-icon { animation: float 3s ease-in-out infinite 1s; }
+        .category-card:nth-child(4) .category-icon { animation: float 3s ease-in-out infinite 1.5s; }
+        .category-card:nth-child(5) .category-icon { animation: float 3s ease-in-out infinite 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Footer */
         .footer {
-            text-align:center;
-            padding:20px;
-            color:#999;
-            font-size:13px;
+            text-align: center;
+            padding: 30px 20px;
+            color: #999;
+            font-size: 13px;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
         }
-        @media (max-width:480px) {
-            .categories-grid { grid-template-columns:1fr; }
-            .header { flex-direction:column; align-items:stretch; }
-            .header-actions { justify-content:center; }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 12px 15px; }
+            .logo-text { font-size: 18px; }
+            .hero { padding: 30px 15px; margin: 10px; }
+            .hero h1 { font-size: 24px; }
+            .categories-grid { grid-template-columns: 1fr; }
+            .install-banner { flex-direction: column; text-align: center; gap: 10px; }
+            .install-banner-content { flex-direction: column; }
         }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
+
+    <!-- Install Banner -->
+    <div class="install-banner" id="installBanner">
+        <div class="install-banner-content">
+            <span class="install-banner-icon">📱</span>
+            <div class="install-banner-text">
+                <strong>Install SK Education App</strong>
+                <span>Get faster access to all study materials</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button class="install-btn" id="installBtn">Install Now</button>
+            <button class="install-close" id="closeInstall">✕</button>
+        </div>
+    </div>
+
+    <!-- Header -->
     <div class="header">
         <div class="logo-container">
             <div class="logo-image">SK</div>
@@ -173,35 +365,33 @@
         </div>
         <div class="header-actions">
             <a href="https://whatsapp.com/channel/0029Vb8BQT0Fsn0gjPxlA10j" target="_blank" class="whatsapp-btn">
-                📱 WhatsApp Channel
+                📱 WhatsApp
             </a>
-            <button class="help-btn" onclick="openHelpModal()">❓ Help</button>
+            <a href="tel:9153417231" class="help-btn">
+                ❓ Help
+            </a>
         </div>
     </div>
-    
-    <div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
         <h1>📚 Class 10 Study Materials</h1>
-        <p class="subtitle">Select a subject to access PDFs and video lectures</p>
+        <p>Access free PDF notes, video lectures, and important questions for all subjects</p>
+        <span class="hero-badge">✨ Updated Regularly</span>
+    </div>
+
+    <!-- Categories -->
+    <div class="container">
+        <div class="section-title">📖 <span>Subjects</span></div>
         <div class="categories-grid" id="categoriesGrid">
-            Loading...
+            <div style="text-align:center;padding:40px;color:#999;">Loading...</div>
         </div>
     </div>
 
-    <!-- Help Modal -->
-    <div class="help-modal" id="helpModal">
-        <div class="help-content">
-            <span class="close-modal" onclick="closeHelpModal()">&times;</span>
-            <h3>📞 Help & Support</h3>
-            <form id="helpForm">
-                <input type="text" id="helpSubject" placeholder="Subject" required>
-                <textarea id="helpMessage" placeholder="Describe your issue..." rows="4" required></textarea>
-                <button type="submit">Send Request</button>
-            </form>
-        </div>
-    </div>
-
+    <!-- Footer -->
     <div class="footer">
-        © 2026 SK Education. All Rights Reserved.
+        © 2026 SK Education. All Rights Reserved. | 
+        <a href="https://whatsapp.com/channel/0029Vb8BQT0Fsn0gjPxlA10j" target="_blank">Join WhatsApp</a>
     </div>
 
     <script>
@@ -214,7 +404,7 @@
             messagingSenderId: "916561394351",
             appId: "1:916561394351:android:06445fc6d1de531e99f25a"
         };
-        
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -234,13 +424,20 @@
             'sst': '🌍'
         };
 
-        // Load categories and stats
+        const CATEGORY_COLORS = {
+            'science': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'math': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+            'hindi': 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
+            'sanskrit': 'linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)',
+            'sst': 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)'
+        };
+
         async function loadCategories() {
             try {
                 const categoriesData = await db.ref('categories').once('value');
                 const data = categoriesData.val() || {};
                 let html = '';
-                
+
                 for (let [key, name] of Object.entries(CATEGORIES)) {
                     let count = 0;
                     if (data[key]) {
@@ -250,16 +447,16 @@
                             }
                         }
                     }
-                    
+
                     html += `
-                        <a href="category.html?cat=${key}" class="category-card">
-                            <div class="category-icon">${CATEGORY_ICONS[key] || '📚'}</div>
+                        <a href="category.html?cat=${key}" class="category-card" style="background: ${CATEGORY_COLORS[key] || 'white'};">
+                            <span class="category-icon">${CATEGORY_ICONS[key] || '📚'}</span>
                             <div class="category-name">${name}</div>
                             <div class="category-count">${count} items</div>
                         </a>
                     `;
                 }
-                
+
                 document.getElementById('categoriesGrid').innerHTML = html;
             } catch (err) {
                 console.error('Error loading categories:', err);
@@ -269,24 +466,36 @@
 
         loadCategories();
 
-        // Help modal functions
-        function openHelpModal() {
-            document.getElementById('helpModal').classList.add('active');
-        }
+        // Install Banner Logic
+        let deferredPrompt;
+        const installBanner = document.getElementById('installBanner');
+        const installBtn = document.getElementById('installBtn');
+        const closeInstall = document.getElementById('closeInstall');
 
-        function closeHelpModal() {
-            document.getElementById('helpModal').classList.remove('active');
-        }
-
-        document.getElementById('helpForm').addEventListener('submit', (e) => {
+        window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-            alert('Your message has been sent! We\'ll get back to you soon.');
-            closeHelpModal();
+            deferredPrompt = e;
+            installBanner.classList.add('show');
         });
 
-        // Close modal on outside click
-        document.getElementById('helpModal').addEventListener('click', function(e) {
-            if (e.target === this) closeHelpModal();
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt.userChoice;
+                if (result.outcome === 'accepted') {
+                    installBanner.classList.remove('show');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        closeInstall.addEventListener('click', () => {
+            installBanner.classList.remove('show');
+        });
+
+        // Check if already installed
+        window.addEventListener('appinstalled', () => {
+            installBanner.classList.remove('show');
         });
     </script>
 </body>
