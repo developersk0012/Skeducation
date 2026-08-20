@@ -1,94 +1,402 @@
-<!-- admin.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - SK Education</title>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:Arial; }
-        body { background:#f5f5f5; display:flex; align-items:center; justify-content:center; min-height:100vh; }
-        .login-box { 
-            background:white; 
-            width:90%; 
-            max-width:350px; 
-            padding:30px; 
-            border-radius:20px; 
-            box-shadow:0 10px 30px rgba(0,0,0,0.1);
-            text-align:center;
-        }
-        .logo-image {
-            width:70px;
-            height:70px;
-            border-radius:50%;
-            object-fit:cover;
-            border:3px solid #4361ee;
-            margin-bottom:15px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #4361ee;
-            margin: 0 auto 15px;
-        }
-        h2 { 
-            color:#4361ee; 
-            margin-bottom:20px; 
-        }
-        .error { 
-            background:#ffebee; 
-            color:#c62828; 
-            padding:10px; 
-            border-radius:8px; 
-            margin-bottom:20px; 
-            display:none;
-        }
-        input { 
-            width:100%; 
-            padding:12px; 
-            margin:10px 0; 
-            border:2px solid #e0e0e0; 
-            border-radius:8px; 
-        }
-        button { 
-            width:100%; 
-            padding:12px; 
-            background:#4361ee; 
-            color:white; 
-            border:none; 
-            border-radius:8px; 
-            cursor:pointer; 
-        }
-        button:hover { 
-            background:#3046bf; 
-        }
-    </style>
+    <title>Admin Panel - SK Education</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="config.js"></script>
 </head>
 <body>
-    <div class="login-box">
-        <div class="logo-image">SK</div>
-        <h2>Admin Login</h2>
-        <div id="error" class="error">Invalid password</div>
-        <form id="adminForm">
-            <input type="password" id="password" placeholder="Enter admin password" required>
-            <button type="submit">Login</button>
-        </form>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" style="display:none;">
+            <div class="admin-login">
+                <div class="logo" style="font-size:50px;text-align:center;">🔐</div>
+                <h2>Admin Login</h2>
+                <p style="color:#a5b4fc;">Enter admin password to continue</p>
+                <form id="adminLoginForm">
+                    <input type="password" id="adminPassword" placeholder="Enter password" required>
+                    <button type="submit">Login</button>
+                    <div id="loginError" style="color:#f72585;margin-top:10px;display:none;">Invalid password!</div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" style="display:none;">
+            <div class="admin-container">
+                <!-- Header -->
+                <div class="admin-header">
+                    <div>
+                        <h2 style="color:white;">🔐 Admin Panel</h2>
+                        <small style="color:#a5b4fc;">Manage your education platform</small>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <button onclick="logoutAdmin()" class="btn-danger" style="padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Logout</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="showAdminTab('add', this)">➕ Add Material</button>
+                    <button class="admin-tab" onclick="showAdminTab('announce', this)">📢 Announcements</button>
+                    <button class="admin-tab" onclick="showAdminTab('manage', this)">📋 Manage</button>
+                    <button class="admin-tab" onclick="showAdminTab('settings', this)">⚙️ Settings</button>
+                </div>
+
+                <!-- Tab: Add Material -->
+                <div id="tab-add" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>📤 Upload Study Material</h3>
+                        <form id="addMaterialForm">
+                            <div class="form-group">
+                                <label>Batch *</label>
+                                <select id="matBatch" required>
+                                    <option value="">Select Batch</option>
+                                    <option value="1">🏆 Khazana Batch</option>
+                                    <option value="2">🌟 Disha Online Classes</option>
+                                    <option value="3">🎯 Target Board</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select id="matCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="science">🔬 Science</option>
+                                    <option value="math">📐 Mathematics</option>
+                                    <option value="hindi">📝 Hindi</option>
+                                    <option value="sanskrit">🕉️ Sanskrit</option>
+                                    <option value="sst">🌍 Social Studies</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Subcategory</label>
+                                <select id="matSubcategory">
+                                    <option value="">Select Subcategory</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Material Type *</label>
+                                <select id="matType" required>
+                                    <option value="pdf">📄 PDF</option>
+                                    <option value="video">🎥 Video</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" id="matTitle" placeholder="Enter title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="matDesc" rows="2" placeholder="Brief description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label id="fileUrlLabel">File URL *</label>
+                                <input type="url" id="matFileUrl" placeholder="https://example.com/file.pdf" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Thumbnail URL (for videos)</label>
+                                <input type="url" id="matThumbnail" placeholder="https://example.com/thumbnail.jpg">
+                            </div>
+                            <button type="submit" class="btn-primary">➕ Add Material</button>
+                            <div id="addSuccess" style="color:#4cc9f0;margin-top:10px;display:none;">✅ Material added successfully!</div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tab: Announcements -->
+                <div id="tab-announce" class="admin-tab-content" style="display:none;">
+                    <div class="admin-card">
+                        <h3>📢 Send Announcement</h3>
+                        <form id="announceForm">
+                            <div class="form-group">
+                                <label>Message *</label>
+                                <textarea id="announceMsg" rows="4" placeholder="Type your announcement here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">📤 Send to All Users</button>
+                            <div id="announceSuccess" style="color:#4cc9f0;margin-top:10px;display:none;">✅ Announcement sent successfully!</div>
+                        </form>
+                    </div>
+
+                    <div class="admin-card" style="margin-top:20px;">
+                        <h3>📋 Recent Announcements</h3>
+                        <div id="announceList">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Tab: Manage -->
+                <div id="tab-manage" class="admin-tab-content" style="display:none;">
+                    <div class="admin-card">
+                        <h3>📋 All Materials</h3>
+                        <div id="manageList">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Tab: Settings -->
+                <div id="tab-settings" class="admin-tab-content" style="display:none;">
+                    <div class="admin-card">
+                        <h3>⚙️ Settings</h3>
+                        
+                        <div class="setting-item">
+                            <h4>🔧 Maintenance Mode</h4>
+                            <p style="color:#a5b4fc;font-size:14px;">When enabled, users will see a maintenance page</p>
+                            <button id="maintenanceToggle" class="btn-warning" onclick="toggleMaintenance()">Turn ON</button>
+                            <div id="maintenanceStatus" style="margin-top:10px;color:#a5b4fc;">Current: OFF</div>
+                        </div>
+
+                        <hr style="border-color:rgba(255,255,255,0.1);margin:20px 0;">
+
+                        <div class="setting-item">
+                            <h4>📊 Statistics</h4>
+                            <div id="statsDisplay">
+                                <p>Total Users: <span id="totalUsers">0</span></p>
+                                <p>Total Materials: <span id="totalMaterials">0</span></p>
+                                <p>Total Announcements: <span id="totalAnnouncements">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        document.getElementById('adminForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const password = document.getElementById('password').value;
-            
-            if (password === 'saten@12345') {
-                sessionStorage.setItem('admin_logged_in', 'true');
-                window.location.href = 'admin_category.html?cat=science';
-            } else {
-                document.getElementById('error').style.display = 'block';
+    // Check admin login
+    const adminLoggedIn = sessionStorage.getItem('admin_logged_in');
+    
+    if (adminLoggedIn === 'true') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        loadAdminData();
+        loadStats();
+    } else {
+        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    // Admin login
+    document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const password = document.getElementById('adminPassword').value;
+        
+        if (password === 'saten@12345') {
+            sessionStorage.setItem('admin_logged_in', 'true');
+            location.reload();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    });
+
+    // Tab switching
+    function showAdminTab(tab, el) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        
+        document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-' + tab).style.display = 'block';
+    }
+
+    // Subcategory dropdown
+    document.getElementById('matCategory').addEventListener('change', function() {
+        const cat = this.value;
+        const subSelect = document.getElementById('matSubcategory');
+        subSelect.innerHTML = '<option value="">Select Subcategory</option>';
+        
+        if (cat && SUBCATEGORIES[cat]) {
+            for (let [key, name] of Object.entries(SUBCATEGORIES[cat])) {
+                subSelect.innerHTML += `<option value="${key}">${name}</option>`;
             }
+        }
+    });
+
+    // Add material
+    document.getElementById('addMaterialForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const batch_id = document.getElementById('matBatch').value;
+        const category_id = document.getElementById('matCategory').value;
+        const subcategory_id = document.getElementById('matSubcategory').value;
+        const type = document.getElementById('matType').value;
+        const title = document.getElementById('matTitle').value;
+        const description = document.getElementById('matDesc').value;
+        const file_path = document.getElementById('matFileUrl').value;
+        const thumbnail = document.getElementById('matThumbnail').value;
+        
+        if (!batch_id || !category_id || !title || !file_path) {
+            alert('Please fill all required fields!');
+            return;
+        }
+        
+        const data = {
+            batch_id: parseInt(batch_id),
+            category_id: category_id,
+            subcategory_id: subcategory_id || '',
+            type: type,
+            title: title,
+            description: description || '',
+            file_path: file_path,
+            thumbnail: thumbnail || '',
+            timestamp: new Date().toISOString()
+        };
+        
+        db.ref('pdfs').push(data).then(() => {
+            document.getElementById('addSuccess').style.display = 'block';
+            setTimeout(() => document.getElementById('addSuccess').style.display = 'none', 3000);
+            this.reset();
+            loadManageList();
+            loadStats();
         });
+    });
+
+    // Send announcement
+    document.getElementById('announceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = document.getElementById('announceMsg').value;
+        
+        if (!message) {
+            alert('Please enter a message!');
+            return;
+        }
+        
+        const data = {
+            message: message,
+            timestamp: new Date().toISOString()
+        };
+        
+        db.ref('announcements').push(data).then(() => {
+            // Send to Telegram
+            const userName = sessionStorage.getItem('admin_name') || 'Admin';
+            sendTelegramAnnouncement(message, userName);
+            
+            document.getElementById('announceSuccess').style.display = 'block';
+            setTimeout(() => document.getElementById('announceSuccess').style.display = 'none', 3000);
+            document.getElementById('announceMsg').value = '';
+            loadAnnounceList();
+        });
+    });
+
+    // Load admin data
+    function loadAdminData() {
+        loadAnnounceList();
+        loadManageList();
+    }
+
+    // Load announcements list
+    function loadAnnounceList() {
+        db.ref('announcements').orderByChild('timestamp').limitToLast(10).on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
+            
+            if (data) {
+                const keys = Object.keys(data).reverse();
+                keys.forEach(function(key) {
+                    const ann = data[key];
+                    html += `
+                        <div class="admin-list-item">
+                            <div>
+                                <div>${ann.message}</div>
+                                <small>${new Date(ann.timestamp).toLocaleString()}</small>
+                            </div>
+                            <button onclick="deleteAnnouncement('${key}')" class="btn-danger-small">✕ Delete</button>
+                        </div>
+                    `;
+                });
+            } else {
+                html = '<p style="color:#a5b4fc;">No announcements yet</p>';
+            }
+            
+            document.getElementById('announceList').innerHTML = html;
+        });
+    }
+
+    // Delete announcement
+    function deleteAnnouncement(id) {
+        if (confirm('Delete this announcement?')) {
+            db.ref('announcements/' + id).remove();
+        }
+    }
+
+    // Load manage list
+    function loadManageList() {
+        db.ref('pdfs').orderByChild('timestamp').on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
+            
+            if (data) {
+                const keys = Object.keys(data).reverse();
+                keys.forEach(function(key) {
+                    const item = data[key];
+                    const batchName = BATCHES[item.batch_id]?.name || 'Unknown';
+                    const catName = CATEGORIES[item.category_id] || 'Unknown';
+                    
+                    html += `
+                        <div class="admin-list-item">
+                            <div>
+                                <strong>${item.title}</strong>
+                                <small>${batchName} • ${catName} • ${item.type}</small>
+                            </div>
+                            <button onclick="deleteMaterial('${key}')" class="btn-danger-small">✕ Delete</button>
+                        </div>
+                    `;
+                });
+            } else {
+                html = '<p style="color:#a5b4fc;">No materials uploaded</p>';
+            }
+            
+            document.getElementById('manageList').innerHTML = html;
+        });
+    }
+
+    // Delete material
+    function deleteMaterial(id) {
+        if (confirm('Delete this material?')) {
+            db.ref('pdfs/' + id).remove();
+            loadStats();
+        }
+    }
+
+    // Load statistics
+    function loadStats() {
+        db.ref('users').on('value', function(snap) {
+            const data = snap.val();
+            document.getElementById('totalUsers').textContent = data ? Object.keys(data).length : 0;
+        });
+        
+        db.ref('pdfs').on('value', function(snap) {
+            const data = snap.val();
+            document.getElementById('totalMaterials').textContent = data ? Object.keys(data).length : 0;
+        });
+        
+        db.ref('announcements').on('value', function(snap) {
+            const data = snap.val();
+            document.getElementById('totalAnnouncements').textContent = data ? Object.keys(data).length : 0;
+        });
+        
+        // Maintenance status
+        db.ref('settings/maintenance').on('value', function(snap) {
+            const status = snap.val() === 'on' ? 'ON' : 'OFF';
+            document.getElementById('maintenanceStatus').textContent = 'Current: ' + status;
+            document.getElementById('maintenanceToggle').textContent = status === 'ON' ? 'Turn OFF' : 'Turn ON';
+            document.getElementById('maintenanceToggle').className = status === 'ON' ? 'btn-success' : 'btn-warning';
+        });
+    }
+
+    // Toggle maintenance
+    function toggleMaintenance() {
+        db.ref('settings/maintenance').once('value', function(snap) {
+            const current = snap.val() === 'on' ? 'off' : 'on';
+            db.ref('settings/maintenance').set(current);
+        });
+    }
+
+    // Logout admin
+    function logoutAdmin() {
+        sessionStorage.removeItem('admin_logged_in');
+        location.reload();
+    }
     </script>
 </body>
 </html>

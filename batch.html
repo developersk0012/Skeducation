@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch - SK Education</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="logo-icon">SK</div>
+                    <div>
+                        <h2 id="batchTitle">Batch</h2>
+                        <small id="batchSubtitle">Loading...</small>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="user-badge" id="userDisplay">👋 User</span>
+                    <a href="index.html" class="icon-btn" title="Home">🏠</a>
+                    <a href="announcements.html" class="icon-btn" title="Announcements">📢</a>
+                    <button onclick="logout()" class="logout-link">Logout</button>
+                </div>
+            </div>
+
+            <!-- Batch Banner -->
+            <div class="batch-banner" id="batchBanner">
+                <img id="batchImage" src="" alt="Batch">
+                <div class="batch-banner-info">
+                    <h1 id="batchName">Batch</h1>
+                    <p id="batchDesc">Description</p>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <h2 class="section-title">📖 Subjects</h2>
+            <div class="category-grid" id="categoryGrid">
+                <!-- Categories will be loaded here -->
+            </div>
+
+            <a href="index.html" class="back-link">← Back to Batches</a>
+        </div>
+    </div>
+
+    <script>
+    // Check login
+    const userName = sessionStorage.getItem('user_name');
+    if (!userName) {
+        window.location.href = 'index.html';
+    }
+    document.getElementById('userDisplay').textContent = '👋 ' + userName;
+
+    // Get batch from URL
+    const batchId = getUrlParam('batch') || 1;
+    const batch = BATCHES[batchId];
+
+    // Update header
+    document.getElementById('batchTitle').textContent = batch.name;
+    document.getElementById('batchSubtitle').textContent = 'Select a subject';
+
+    // Update banner
+    document.getElementById('batchImage').src = batch.image;
+    document.getElementById('batchName').textContent = batch.name;
+    document.getElementById('batchDesc').textContent = batch.description;
+
+    // Load categories
+    function loadCategories() {
+        const grid = document.getElementById('categoryGrid');
+        grid.innerHTML = '<div class="loading">Loading categories...</div>';
+
+        db.ref('pdfs').orderByChild('batch_id').equalTo(parseInt(batchId)).on('value', function(snap) {
+            const data = snap.val();
+            const categoryCount = {};
+            
+            if (data) {
+                Object.values(data).forEach(function(pdf) {
+                    const cat = pdf.category_id;
+                    if (cat) {
+                        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+                    }
+                });
+            }
+
+            let html = '';
+            for (let [key, name] of Object.entries(CATEGORIES)) {
+                const count = categoryCount[key] || 0;
+                html += `
+                    <a href="subcategory.html?batch=${batchId}&cat=${key}" class="category-card">
+                        <span class="cat-icon">${CATEGORY_ICONS[key] || '📚'}</span>
+                        <h3>${name}</h3>
+                        <small>${count} materials</small>
+                    </a>
+                `;
+            }
+            grid.innerHTML = html || '<p style="color:#a5b4fc;text-align:center;">No categories available</p>';
+        });
+    }
+
+    loadCategories();
+
+    // Check maintenance
+    db.ref('settings/maintenance').on('value', function(snap) {
+        if (snap.val() === 'on') {
+            document.getElementById('app').innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);color:white;text-align:center;font-family:Arial;padding:20px;">
+                    <div style="padding:50px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);max-width:500px;">
+                        <div style="font-size:80px;margin-bottom:20px;">🔧</div>
+                        <h1 style="font-size:36px;">Under Maintenance</h1>
+                        <p style="color:#a5b4fc;">We're updating our content. Please check back soon!</p>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    function logout() {
+        sessionStorage.removeItem('user_name');
+        window.location.href = 'index.html';
+    }
+    </script>
+</body>
+</html>

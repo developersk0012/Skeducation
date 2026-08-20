@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - SK Education</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-icon">SK</div>
+                <div>
+                    <h2>📢 Announcements</h2>
+                    <small>All announcements from admin</small>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="user-badge" id="userDisplay">👋 User</span>
+                <a href="index.html" class="icon-btn" title="Home">🏠</a>
+                <button onclick="logout()" class="logout-link">Logout</button>
+            </div>
+        </div>
+
+        <!-- Announcements List -->
+        <div id="announcementsList">
+            <div class="loading">Loading announcements...</div>
+        </div>
+
+        <!-- Reply Box -->
+        <div class="reply-section">
+            <h3>💬 Reply to Admin</h3>
+            <p style="color:#a5b4fc;font-size:14px;">Click the button below to send an email to admin</p>
+            <a href="mailto:satendrakkushwaha12@gmail.com" class="reply-btn-large">
+                ✉ Send Email to Admin
+            </a>
+        </div>
+    </div>
+
+    <script>
+    // Check login
+    const userName = sessionStorage.getItem('user_name');
+    if (!userName) {
+        window.location.href = 'index.html';
+    }
+    document.getElementById('userDisplay').textContent = '👋 ' + userName;
+
+    // Load all announcements
+    db.ref('announcements').orderByChild('timestamp').on('value', function(snap) {
+        const data = snap.val();
+        const container = document.getElementById('announcementsList');
+        
+        if (data) {
+            const keys = Object.keys(data).reverse();
+            let html = '';
+            
+            keys.forEach(function(key) {
+                const ann = data[key];
+                html += `
+                    <div class="announcement-card" id="ann-${key}">
+                        <div class="ann-card-header">
+                            <span class="ann-badge">📢</span>
+                            <span class="ann-date">${new Date(ann.timestamp).toLocaleString()}</span>
+                        </div>
+                        <div class="ann-card-body">
+                            ${ann.message}
+                        </div>
+                        <div class="ann-card-footer">
+                            <button class="seen-btn" onclick="markAsSeen('${key}')">✓ Mark as Seen</button>
+                            <a href="mailto:${ADMIN_EMAIL}?subject=Reply to Announcement" class="reply-btn">✉ Reply</a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<div class="empty-state">📭 No announcements yet</div>';
+        }
+    });
+
+    // Mark as seen
+    function markAsSeen(id) {
+        const userName = sessionStorage.getItem('user_name') || 'Unknown';
+        sendSeenNotification(id, userName);
+        
+        db.ref('seen_announcements').push({
+            announcement_id: id,
+            user_name: userName,
+            timestamp: new Date().toISOString()
+        });
+        
+        document.getElementById('ann-' + id).style.opacity = '0.5';
+        alert('✅ Marked as seen!');
+    }
+
+    // Check maintenance
+    db.ref('settings/maintenance').on('value', function(snap) {
+        if (snap.val() === 'on') {
+            document.body.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);color:white;text-align:center;font-family:Arial;padding:20px;">
+                    <div style="padding:50px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);max-width:500px;">
+                        <div style="font-size:80px;margin-bottom:20px;">🔧</div>
+                        <h1 style="font-size:36px;">Under Maintenance</h1>
+                        <p style="color:#a5b4fc;">We're updating our content. Please check back soon!</p>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    function logout() {
+        sessionStorage.removeItem('user_name');
+        window.location.href = 'index.html';
+    }
+    </script>
+</body>
+</html>

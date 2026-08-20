@@ -3,453 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subcategory - SK Education</title>
-    <link rel="manifest" href="manifest.json">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
-
-        .header {
-            background: white;
-            padding: 15px 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo-image {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 16px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .back-btn {
-            background: #f0f0f0;
-            padding: 8px 18px;
-            border-radius: 25px;
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            transition: 0.3s;
-            font-size: 14px;
-        }
-
-        .back-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .header-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #333;
-        }
-
-        .header-title small {
-            display: block;
-            font-size: 12px;
-            color: #999;
-            font-weight: normal;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .whatsapp-btn {
-            background: #25D366;
-            color: white;
-            padding: 8px 18px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-            transition: 0.3s;
-        }
-
-        .whatsapp-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-        }
-
-        .help-btn {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-
-        .help-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-            background: white;
-            padding: 6px;
-            border-radius: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        }
-
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 14px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-weight: 600;
-            font-size: 15px;
-            color: #666;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .tab:hover:not(.active) {
-            background: #f0f0f0;
-        }
-
-        .item {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            gap: 18px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            transition: 0.3s;
-            border-left: 4px solid transparent;
-        }
-
-        .item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-        }
-
-        .item-pdf {
-            border-left-color: #667eea;
-        }
-
-        .item-video {
-            border-left-color: #e74c3c;
-        }
-
-        .item-icon {
-            width: 55px;
-            height: 55px;
-            background: #f5f7fa;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            flex-shrink: 0;
-        }
-
-        .item-info {
-            flex: 1;
-        }
-
-        .item-title {
-            font-weight: 700;
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .item-desc {
-            color: #888;
-            font-size: 13px;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-
-        .item-btn {
-            display: inline-block;
-            padding: 8px 22px;
-            border-radius: 25px;
-            text-decoration: none;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .item-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .pdf-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .video-btn {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-        }
-
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-            background: white;
-            border-radius: 16px;
-            font-size: 16px;
-        }
-
-        .empty-icon {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 15px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 30px 20px;
-            color: #999;
-            font-size: 13px;
-            border-top: 1px solid #eee;
-            margin-top: 20px;
-        }
-
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        @media (max-width: 600px) {
-            .header { padding: 12px 15px; }
-            .item { flex-direction: column; align-items: center; text-align: center; }
-            .tabs { flex-direction: column; border-radius: 16px; }
-            .tab { border-radius: 12px; }
-        }
-    </style>
+    <title>Study Materials - SK Education</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="config.js"></script>
 </head>
 <body>
+    <div id="app">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="logo-icon">SK</div>
+                    <div>
+                        <h2 id="categoryTitle">Category</h2>
+                        <small id="batchNameDisplay">Loading...</small>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="user-badge" id="userDisplay">👋 User</span>
+                    <a href="batch.html?batch=" id="backToBatch" class="icon-btn" title="Back">←</a>
+                    <button onclick="logout()" class="logout-link">Logout</button>
+                </div>
+            </div>
 
-    <div class="header">
-        <div class="header-left">
-            <div class="logo-image">SK</div>
-            <a href="#" id="backLink" class="back-btn">← Back</a>
-        </div>
-        <div class="header-title" id="subcategoryName">
-            Loading...
-            <small>Subcategory</small>
-        </div>
-        <div class="header-actions">
-            <a href="https://whatsapp.com/channel/0029Vb8BQT0Fsn0gjPxlA10j" target="_blank" class="whatsapp-btn">📱 WhatsApp Channel</a>
-            <a href="https://wa.me/919153417231" target="_blank" class="help-btn">💬 Help on WhatsApp</a>
-        </div>
-    </div>
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('pdf', this)">📄 PDFs</button>
+                <button class="tab" onclick="showTab('video', this)">🎥 Videos</button>
+            </div>
 
-    <div class="container">
-        <div class="tabs">
-            <div class="tab active" onclick="showTab('pdf', this)">📄 PDFs</div>
-            <div class="tab" onclick="showTab('video', this)">🎥 Videos</div>
+            <!-- Content -->
+            <div id="pdfContent" class="tab-content"></div>
+            <div id="videoContent" class="tab-content" style="display:none;"></div>
         </div>
-
-        <div id="pdfGrid"></div>
-        <div id="videoGrid" class="hidden"></div>
-    </div>
-
-    <div class="footer">
-        © 2026 SK Education. All Rights Reserved. | 
-        <a href="https://whatsapp.com/channel/0029Vb8BQT0Fsn0gjPxlA10j" target="_blank">Join WhatsApp Channel</a>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAEA_jznrLsOcIJ5jR0qmBQwigStJ4RiAw",
-            authDomain: "my-last-education.firebaseapp.com",
-            databaseURL: "https://my-last-education-default-rtdb.firebaseio.com",
-            projectId: "my-last-education",
-            storageBucket: "my-last-education.firebasestorage.app",
-            messagingSenderId: "916561394351",
-            appId: "1:916561394351:android:06445fc6d1de531e99f25a"
-        };
+    // Check login
+    const userName = sessionStorage.getItem('user_name');
+    if (!userName) {
+        window.location.href = 'index.html';
+    }
+    document.getElementById('userDisplay').textContent = '👋 ' + userName;
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    // Get params
+    const batchId = getUrlParam('batch') || 1;
+    const catKey = getUrlParam('cat') || 'science';
 
-        const CATEGORIES = {
-            'science': 'Science',
-            'math': 'Mathematics',
-            'hindi': 'Hindi',
-            'sanskrit': 'Sanskrit',
-            'sst': 'Social Studies'
-        };
+    // Update header
+    document.getElementById('categoryTitle').textContent = CATEGORIES[catKey] || 'Category';
+    document.getElementById('batchNameDisplay').textContent = BATCHES[batchId]?.name || 'Batch';
+    document.getElementById('backToBatch').href = `batch.html?batch=${batchId}`;
 
-        const SUBCATEGORIES = {
-            'science': {
-                'physics': 'Physics',
-                'chemistry': 'Chemistry',
-                'biology': 'Biology'
-            },
-            'math': {
-                'objective': 'Objective',
-                'subjective': 'Subjective',
-                'notes': 'Notes'
-            },
-            'hindi': {
-                'grammar': 'Grammar',
-                'book_notes': 'Book Notes',
-                'imp_question': 'Important Questions'
-            },
-            'sanskrit': {
-                'grammar': 'Grammar',
-                'book_notes': 'Book Notes',
-                'imp_question': 'Important Questions'
-            },
-            'sst': {
-                'history': 'History',
-                'geography': 'Geography',
-                'civics': 'Civics',
-                'economics': 'Economics'
-            }
-        };
+    // Load materials
+    function loadMaterials() {
+        const pdfContainer = document.getElementById('pdfContent');
+        const videoContainer = document.getElementById('videoContent');
+        
+        pdfContainer.innerHTML = '<div class="loading">Loading PDFs...</div>';
+        videoContainer.innerHTML = '<div class="loading">Loading Videos...</div>';
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const cat = urlParams.get('cat');
-        const sub = urlParams.get('sub');
-
-        if (!cat || !sub || !CATEGORIES[cat] || !SUBCATEGORIES[cat] || !SUBCATEGORIES[cat][sub]) {
-            window.location.href = 'index.html';
-        }
-
-        document.getElementById('subcategoryName').innerHTML = `
-            ${SUBCATEGORIES[cat][sub]}
-            <small>${CATEGORIES[cat]}</small>
-        `;
-        document.getElementById('backLink').href = `category.html?cat=${cat}`;
-
-        async function loadItems() {
-            try {
-                const data = await db.ref(`categories/${cat}/${sub}/items`).once('value');
-                const items = data.val() || {};
-
-                let pdfHtml = '';
-                let videoHtml = '';
-
-                for (let key in items) {
-                    const item = items[key];
-                    if (item.type === 'pdf') {
-                        pdfHtml += `
-                            <div class="item item-pdf">
-                                <div class="item-icon">📄</div>
-                                <div class="item-info">
-                                    <div class="item-title">${escapeHtml(item.title)}</div>
-                                    <div class="item-desc">${escapeHtml(item.description || '')}</div>
-                                    <a href="${escapeHtml(item.fileUrl)}" target="_blank" class="item-btn pdf-btn">📥 Download PDF</a>
+        db.ref('pdfs').orderByChild('batch_id').equalTo(parseInt(batchId)).on('value', function(snap) {
+            const data = snap.val();
+            let pdfHtml = '';
+            let videoHtml = '';
+            
+            if (data) {
+                Object.values(data).forEach(function(pdf) {
+                    if (pdf.category_id === catKey) {
+                        const itemHtml = `
+                            <div class="material-item">
+                                <div class="material-icon">${pdf.type === 'pdf' ? '📄' : '🎥'}</div>
+                                <div class="material-info">
+                                    <h4>${pdf.title || 'Untitled'}</h4>
+                                    <p>${pdf.description || ''}</p>
+                                    ${pdf.thumbnail ? `<img src="${pdf.thumbnail}" class="material-thumb" alt="Thumbnail">` : ''}
+                                    <a href="${pdf.file_path}" target="_blank" class="material-btn ${pdf.type === 'pdf' ? 'pdf-btn' : 'video-btn'}">
+                                        ${pdf.type === 'pdf' ? '📥 Download PDF' : '▶️ Watch Video'}
+                                    </a>
                                 </div>
                             </div>
                         `;
-                    } else if (item.type === 'video') {
-                        videoHtml += `
-                            <div class="item item-video">
-                                <div class="item-icon">🎥</div>
-                                <div class="item-info">
-                                    <div class="item-title">${escapeHtml(item.title)}</div>
-                                    <div class="item-desc">${escapeHtml(item.description || '')}</div>
-                                    <a href="${escapeHtml(item.fileUrl)}" target="_blank" class="item-btn video-btn">▶️ Watch Video</a>
-                                </div>
-                            </div>
-                        `;
+                        
+                        if (pdf.type === 'pdf') {
+                            pdfHtml += itemHtml;
+                        } else {
+                            videoHtml += itemHtml;
+                        }
                     }
-                }
-
-                document.getElementById('pdfGrid').innerHTML = pdfHtml || `
-                    <div class="empty">
-                        <span class="empty-icon">📄</span>
-                        No PDFs available
-                    </div>
-                `;
-                document.getElementById('videoGrid').innerHTML = videoHtml || `
-                    <div class="empty">
-                        <span class="empty-icon">🎥</span>
-                        No videos available
-                    </div>
-                `;
-
-            } catch (err) {
-                console.error('Error loading items:', err);
-                document.getElementById('pdfGrid').innerHTML = '<div class="empty">Error loading items</div>';
+                });
             }
+
+            pdfContainer.innerHTML = pdfHtml || '<div class="empty-state">📭 No PDFs available</div>';
+            videoContainer.innerHTML = videoHtml || '<div class="empty-state">🎬 No Videos available</div>';
+        });
+    }
+
+    // Tab switching
+    function showTab(type, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        
+        document.getElementById('pdfContent').style.display = type === 'pdf' ? 'block' : 'none';
+        document.getElementById('videoContent').style.display = type === 'video' ? 'block' : 'none';
+    }
+
+    loadMaterials();
+
+    // Check maintenance
+    db.ref('settings/maintenance').on('value', function(snap) {
+        if (snap.val() === 'on') {
+            document.getElementById('app').innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);color:white;text-align:center;font-family:Arial;padding:20px;">
+                    <div style="padding:50px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);max-width:500px;">
+                        <div style="font-size:80px;margin-bottom:20px;">🔧</div>
+                        <h1 style="font-size:36px;">Under Maintenance</h1>
+                        <p style="color:#a5b4fc;">We're updating our content. Please check back soon!</p>
+                    </div>
+                </div>
+            `;
         }
+    });
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function showTab(type, element) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            element.classList.add('active');
-
-            document.getElementById('pdfGrid').classList.toggle('hidden', type !== 'pdf');
-            document.getElementById('videoGrid').classList.toggle('hidden', type !== 'video');
-        }
-
-        loadItems();
+    function logout() {
+        sessionStorage.removeItem('user_name');
+        window.location.href = 'index.html';
+    }
     </script>
 </body>
 </html>
