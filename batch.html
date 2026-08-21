@@ -20,13 +20,13 @@
         .header-left small { color: #a5b4fc; font-size: 13px; display: block; }
         .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .user-badge { background: rgba(67,97,238,0.2); padding: 6px 18px; border-radius: 50px; font-size: 14px; color: #a5b4fc; border: 1px solid rgba(67,97,238,0.15); }
-        .icon-btn { background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 50px; text-decoration: none; color: #a5b4fc; font-size: 18px; }
+        .icon-btn { background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 50px; text-decoration: none; color: #a5b4fc; font-size: 18px; transition: all .2s; }
         .icon-btn:hover { background: rgba(255,255,255,0.12); color: white; }
-        .logout-link { background: none; border: none; color: #f72585; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 50px; }
+        .logout-link { background: none; border: none; color: #f72585; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 50px; transition: all .2s; }
         .logout-link:hover { background: rgba(247,37,133,0.15); }
 
         .batch-banner { background: rgba(255,255,255,0.04); border-radius: 18px; overflow: hidden; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.06); }
-        .batch-banner img { width: 100%; height: 250px; object-fit: cover; }
+        .batch-banner img { width: 100%; height: 250px; object-fit: cover; display: block; background: rgba(255,255,255,0.05); }
         .batch-banner-info { padding: 25px 30px; }
         .batch-banner-info h1 { font-size: 28px; margin-bottom: 4px; }
         .batch-banner-info p { color: #a5b4fc; font-size: 16px; }
@@ -34,15 +34,20 @@
         .section-title { font-size: 24px; font-weight: 700; margin: 25px 0 18px; background: linear-gradient(90deg, #4cc9f0, #f72585); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; margin-top: 10px; }
-        .category-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 14px; padding: 25px 18px; text-align: center; border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; text-decoration: none; color: white; }
+        .category-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 14px; padding: 25px 18px; text-align: center; border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; text-decoration: none; color: white; opacity: 0; animation: cardIn 0.4s ease forwards; }
         .category-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); border-color: rgba(67,97,238,0.3); }
         .category-card .cat-icon { font-size: 36px; display: block; margin-bottom: 8px; }
         .category-card h3 { font-size: 16px; margin-bottom: 4px; }
         .category-card small { color: #6a7a9e; font-size: 13px; }
 
+        @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .back-link { display: inline-block; margin-top: 25px; color: #4cc9f0; text-decoration: none; font-size: 15px; }
         .back-link:hover { text-decoration: underline; }
-        .loading { text-align: center; padding: 40px; color: #a5b4fc; }
+
+        .loading { text-align: center; padding: 50px 20px; color: #a5b4fc; }
+        .spinner { width: 40px; height: 40px; margin: 0 auto 14px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #4cc9f0; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
             .main-container { padding: 15px; }
@@ -86,8 +91,8 @@
 
         <!-- CATEGORIES -->
         <h2 class="section-title">📖 Subjects</h2>
-        <div class="category-grid" id="categoryGrid">
-            <div class="loading">⏳ Loading categories...</div>
+        <div class="category-grid" id="categoryGrid" style="display:block;">
+            <div class="loading"><div class="spinner"></div>⏳ Loading categories...</div>
         </div>
 
         <a href="index.html" class="back-link">← Back to Batches</a>
@@ -101,8 +106,7 @@
     
     if (!userName) {
         window.location.href = 'index.html';
-        return;
-    }
+    } else {
 
     document.getElementById('userDisplay').textContent = '👋 ' + userName;
 
@@ -126,51 +130,53 @@
 
     // ========================================
     // LOAD CATEGORIES
+    // Fixed: pehle 'orderByChild(batch_id).equalTo(...)' use ho raha
+    // tha jo Firebase index na hone par ya batch_id string/number
+    // mismatch hone par silently fail ho jaata tha. Ab hum poora
+    // 'pdfs' node fetch karke client-side filter karte hain (chhoti
+    // dataset ke liye safe aur reliable) + proper error handling.
     // ========================================
     function loadCategories() {
         const grid = document.getElementById('categoryGrid');
-        grid.innerHTML = '<div class="loading">⏳ Loading categories...</div>';
+        grid.innerHTML = '<div class="loading"><div class="spinner"></div>⏳ Loading categories...</div>';
 
-        db.ref('pdfs').orderByChild('batch_id').equalTo(parseInt(batchId)).once('value')
+        const timer = withLoadingTimeout(grid);
+
+        db.ref('pdfs').once('value')
         .then(function(snap) {
+            clearTimeout(timer);
             const data = snap.val();
             const categoryCount = {};
-            
+
             if (data) {
                 Object.values(data).forEach(function(pdf) {
-                    const cat = pdf.category_id;
-                    if (cat) {
-                        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+                    // Loose comparison handles both string ("1") and number (1) batch_id
+                    if (pdf && String(pdf.batch_id) === String(batchId) && pdf.category_id) {
+                        categoryCount[pdf.category_id] = (categoryCount[pdf.category_id] || 0) + 1;
                     }
                 });
             }
 
             let html = '';
-            let hasCategories = false;
-
+            let i = 0;
             for (let [key, name] of Object.entries(CATEGORIES)) {
                 const count = categoryCount[key] || 0;
                 const icon = CATEGORY_ICONS[key] || '📚';
-                
                 html += `
-                    <a href="subcategory.html?batch=${batchId}&cat=${key}" class="category-card">
+                    <a href="subcategory.html?batch=${batchId}&cat=${key}" class="category-card" style="animation-delay:${i * 0.05}s">
                         <span class="cat-icon">${icon}</span>
                         <h3>${name}</h3>
                         <small>${count} materials</small>
                     </a>
                 `;
-                hasCategories = true;
+                i++;
             }
 
-            grid.innerHTML = html;
-            
-            if (!hasCategories) {
-                grid.innerHTML = '<div style="color:#a5b4fc;text-align:center;padding:40px;">📭 No categories available</div>';
-            }
+            grid.innerHTML = `<div class="category-grid">${html}</div>`;
         })
         .catch(function(err) {
-            console.error('Error loading categories:', err);
-            grid.innerHTML = '<div style="color:#f72585;text-align:center;padding:40px;">❌ Error loading categories</div>';
+            clearTimeout(timer);
+            showDbError(grid, err);
         });
     }
 
@@ -191,7 +197,11 @@
                 </div>
             `;
         }
+    }, function(err) {
+        console.error('Maintenance check failed:', err);
     });
+
+    } // end else (logged in)
 
     // ========================================
     // LOGOUT

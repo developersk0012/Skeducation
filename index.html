@@ -22,7 +22,7 @@
         .login-input-group input { width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 16px; }
         .login-input-group input:focus { outline: none; border-color: #4361ee; background: rgba(255,255,255,0.08); }
         .login-input-group input::placeholder { color: #4a5a7a; }
-        .login-btn { width: 100%; padding: 16px; background: linear-gradient(90deg, #4361ee, #f72585); border: none; border-radius: 12px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; }
+        .login-btn { width: 100%; padding: 16px; background: linear-gradient(90deg, #4361ee, #f72585); border: none; border-radius: 12px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; transition: all .2s; }
         .login-btn:hover { transform: scale(1.02); }
         .login-error { color: #f72585; margin-top: 12px; text-align: center; font-size: 14px; display: none; }
 
@@ -37,9 +37,9 @@
         .header-left small { color: #a5b4fc; font-size: 13px; display: block; }
         .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .user-badge { background: rgba(67,97,238,0.2); padding: 6px 18px; border-radius: 50px; font-size: 14px; color: #a5b4fc; border: 1px solid rgba(67,97,238,0.15); }
-        .icon-btn { background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 50px; text-decoration: none; color: #a5b4fc; font-size: 18px; }
+        .icon-btn { background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 50px; text-decoration: none; color: #a5b4fc; font-size: 18px; transition: all .2s; }
         .icon-btn:hover { background: rgba(255,255,255,0.12); color: white; }
-        .logout-link { background: none; border: none; color: #f72585; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 50px; }
+        .logout-link { background: none; border: none; color: #f72585; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 50px; transition: all .2s; }
         .logout-link:hover { background: rgba(247,37,133,0.15); }
 
         .announcement-box { background: rgba(67,97,238,0.12); border-left: 4px solid #4361ee; padding: 16px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -47,9 +47,9 @@
         .announcement-box .msg strong { color: #4cc9f0; display: block; font-size: 14px; }
         .announcement-box .msg small { color: #6a7a9e; font-size: 12px; display: block; margin-top: 4px; }
         .ann-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .seen-btn { background: rgba(76,201,240,0.15); color: #4cc9f0; border: 1px solid rgba(76,201,240,0.15); padding: 6px 16px; border-radius: 50px; cursor: pointer; font-size: 13px; }
+        .seen-btn { background: rgba(76,201,240,0.15); color: #4cc9f0; border: 1px solid rgba(76,201,240,0.15); padding: 6px 16px; border-radius: 50px; cursor: pointer; font-size: 13px; transition: all .2s; }
         .seen-btn:hover { background: rgba(76,201,240,0.3); }
-        .reply-btn { background: rgba(67,97,238,0.15); color: #4361ee; border: 1px solid rgba(67,97,238,0.15); padding: 6px 16px; border-radius: 50px; text-decoration: none; font-size: 13px; }
+        .reply-btn { background: rgba(67,97,238,0.15); color: #4361ee; border: 1px solid rgba(67,97,238,0.15); padding: 6px 16px; border-radius: 50px; text-decoration: none; font-size: 13px; transition: all .2s; }
         .reply-btn:hover { background: rgba(67,97,238,0.3); }
 
         .section-title { font-size: 26px; font-weight: 700; margin: 30px 0 20px; background: linear-gradient(90deg, #4cc9f0, #f72585); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -188,11 +188,13 @@
 
     // ========================================
     // LOAD ANNOUNCEMENTS
+    // Fixed: error callback add kiya taaki agar permission ya
+    // connection issue ho to box khaali na dikhe, error clear ho.
     // ========================================
     function loadAnnouncements() {
+        const box = document.getElementById('announcementBox');
         db.ref('announcements').orderByChild('timestamp').limitToLast(3).on('value', function(snap) {
             const data = snap.val();
-            const box = document.getElementById('announcementBox');
             box.innerHTML = '';
             
             if (data) {
@@ -214,6 +216,8 @@
                     `;
                 });
             }
+        }, function(err) {
+            showDbError(box, err);
         });
     }
 
@@ -227,10 +231,13 @@
             announcement_id: id,
             user_name: name,
             timestamp: new Date().toISOString()
+        }).catch(function(err) {
+            console.error('Mark as seen failed:', err);
+            alert('❌ Kuch gadbad ho gayi, phir try karein.');
         });
         
-        document.getElementById('ann-' + id).style.opacity = '0.5';
-        alert('✅ Marked as seen!');
+        const el = document.getElementById('ann-' + id);
+        if (el) el.style.opacity = '0.5';
     }
 
     // ========================================
@@ -250,6 +257,8 @@
                     </div>
                 `;
             }
+        }, function(err) {
+            console.error('Maintenance check failed:', err);
         });
     }
 
