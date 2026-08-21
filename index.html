@@ -8,18 +8,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="config.js"></script>
+    <!-- html2canvas and jspdf for PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div id="app">
-        <!-- Name Entry Screen -->
-        <div id="nameScreen" style="display:none;">
-            <div class="name-container">
+        <!-- Login Screen -->
+        <div id="loginScreen" style="display:none;">
+            <div class="login-container">
                 <div class="logo">📚</div>
                 <h2>Welcome to SK Education</h2>
-                <p>Enter your name to access study materials</p>
-                <form id="nameForm">
-                    <input type="text" id="userNameInput" placeholder="Enter your full name..." required>
-                    <button type="submit">Continue →</button>
+                <p>Enter your details to access study materials</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="loginName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Class</label>
+                        <input type="text" id="loginClass" value="Class 10" readonly style="background:rgba(255,255,255,0.05);">
+                    </div>
+                    <button type="submit">🚀 Continue</button>
+                    <div id="loginError" style="color:#f72585;margin-top:10px;display:none;"></div>
                 </form>
             </div>
         </div>
@@ -80,35 +95,183 @@
 
     <script>
     // Check if user is logged in
-    const userName = sessionStorage.getItem('user_name');
+    const user = getCurrentUser();
     
-    if (userName) {
-        document.getElementById('nameScreen').style.display = 'none';
+    if (user) {
+        document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        document.getElementById('userDisplay').textContent = '👋 ' + userName;
+        document.getElementById('userDisplay').textContent = '👋 ' + user.name;
+        document.getElementById('userDisplay').title = 'Roll No: ' + user.rollNo;
         loadAnnouncements();
         checkMaintenance();
+        // Log login activity
+        logActivity(user.rollNo, 'login', 'User logged in');
     } else {
-        document.getElementById('nameScreen').style.display = 'block';
+        document.getElementById('loginScreen').style.display = 'block';
         document.getElementById('mainApp').style.display = 'none';
     }
 
-    // Name form submit
-    document.getElementById('nameForm').addEventListener('submit', function(e) {
+    // Login form submit
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        const name = document.getElementById('userNameInput').value.trim();
-        if (name) {
-            sessionStorage.setItem('user_name', name);
-            // Send Telegram notification
-            sendTelegramNotification(name);
-            // Save to Firebase
-            db.ref('users').push({
-                name: name,
-                timestamp: new Date().toISOString()
-            });
+        
+        const name = document.getElementById('loginName').value.trim();
+        const email = document.getElementById('loginEmail').value.trim();
+        const errorDiv = document.getElementById('loginError');
+        
+        if (!name || !email) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Please fill all fields!';
+            return;
+        }
+        
+        if (!email.includes('@') || !email.includes('.')) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Please enter a valid email!';
+            return;
+        }
+        
+        errorDiv.style.display = 'none';
+        
+        try {
+            // Check if user already exists
+            const snapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
+            let userData = null;
+            let userId = null;
+            let isNewUser = false;
+            
+            if (snapshot.exists()) {
+                // User exists - login
+                snapshot.forEach(function(child) {
+                    userData = child.val();
+                    userId = child.key;
+                });
+            } else {
+                // New user - create
+                isNewUser = true;
+                const rollNo = await generateRollNumber();
+                userData = {
+                    name: name,
+                    email: email,
+                    class: 'Class 10',
+                    rollNo: rollNo,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString()
+                };
+                const newUserRef = await db.ref('users').push(userData);
+                userId = newUserRef.key;
+            }
+            
+            // Save to localStorage
+            const userToSave = {
+                id: userId,
+                name: userData.name,
+                email: userData.email,
+                class: userData.class || 'Class 10',
+                rollNo: userData.rollNo,
+                isNew: isNewUser
+            };
+            localStorage.setItem('sk_user_data', JSON.stringify(userToSave));
+            
+            // Log activity
+            await logActivity(userData.rollNo, 'login', `User logged in from ${window.location.hostname}`);
+            
+            // Send email notification to user
+            sendLoginEmail(userData);
+            
+            // Send notification to admin email
+            sendAdminNotification(userData, 'login');
+            
+            // Generate and download ID card PDF
+            if (isNewUser) {
+                setTimeout(() => {
+                    generateIDCard(userData);
+                }, 1000);
+            }
+            
+            // Reload page
             location.reload();
+            
+        } catch (err) {
+            console.error('Login error:', err);
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Something went wrong. Please try again.';
         }
     });
+
+    // Send admin notification
+    function sendAdminNotification(userData, action) {
+        const subject = encodeURIComponent(`🔔 User ${action}: ${userData.name}`);
+        const body = encodeURIComponent(`
+User Activity Notification
+
+👤 Name: ${userData.name}
+📧 Email: ${userData.email}
+🆔 Roll No: ${userData.rollNo}
+📅 Time: ${new Date().toLocaleString()}
+🎯 Action: ${action}
+🌐 IP: ${window.location.hostname}
+
+---
+SK Education Admin Panel
+        `);
+        
+        // Open email client with admin email
+        window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`);
+    }
+
+    // Generate ID Card PDF
+    function generateIDCard(userData) {
+        // Create ID card HTML
+        const idCardHTML = `
+            <div id="idCard" style="width:400px;padding:20px;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);border-radius:15px;border:2px solid #4361ee;font-family:Arial;color:white;text-align:center;">
+                <div style="border-bottom:2px solid #4361ee;padding-bottom:15px;margin-bottom:15px;">
+                    <div style="font-size:28px;font-weight:900;background:linear-gradient(90deg,#4cc9f0,#f72585);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SK Education</div>
+                    <div style="font-size:12px;color:#a5b4fc;">Student ID Card</div>
+                </div>
+                <div style="font-size:60px;margin:10px 0;">📚</div>
+                <div style="font-size:18px;font-weight:bold;margin:5px 0;">${userData.name}</div>
+                <div style="font-size:14px;color:#a5b4fc;">${userData.email}</div>
+                <div style="margin:10px 0;padding:8px;background:rgba(67,97,238,0.2);border-radius:8px;">
+                    <div>🎓 ${userData.class || 'Class 10'}</div>
+                    <div>🆔 Roll No: ${userData.rollNo}</div>
+                </div>
+                <div style="border-top:2px solid #4361ee;padding-top:10px;margin-top:10px;font-size:10px;color:#6a7a9e;">
+                    Valid until: ${new Date().toISOString().split('T')[0]}
+                </div>
+            </div>
+        `;
+        
+        // Create temporary div
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = idCardHTML;
+        tempDiv.style.position = 'fixed';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '0';
+        document.body.appendChild(tempDiv);
+        
+        const idCardElement = tempDiv.querySelector('#idCard');
+        
+        // Generate PDF
+        html2canvas(idCardElement, {
+            scale: 2,
+            backgroundColor: '#0c0c2e'
+        }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a6');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`SK_Education_ID_${userData.name}.pdf`);
+            
+            // Clean up
+            document.body.removeChild(tempDiv);
+        }).catch(err => {
+            console.error('PDF generation error:', err);
+            document.body.removeChild(tempDiv);
+        });
+    }
 
     // Load announcements
     function loadAnnouncements() {
@@ -130,6 +293,7 @@
                             </div>
                             <div class="ann-actions">
                                 <button class="seen-btn" onclick="markAsSeen('${key}')">✓ Seen</button>
+                                <button class="like-btn" onclick="likeAnnouncement('${key}')">❤️ Like</button>
                                 <a href="mailto:${ADMIN_EMAIL}?subject=Reply to Announcement" class="reply-btn">✉ Reply</a>
                             </div>
                         </div>
@@ -139,19 +303,51 @@
         });
     }
 
-    // Mark as seen
+    // Mark as seen with activity log
     function markAsSeen(id) {
-        const userName = sessionStorage.getItem('user_name') || 'Unknown';
-        sendSeenNotification(id, userName);
+        const user = getCurrentUser();
+        if (!user) return;
+        
+        // Log activity
+        logActivity(user.rollNo, 'seen', `Marked announcement #${id} as seen`);
         
         // Save seen status
         db.ref('seen_announcements').push({
             announcement_id: id,
-            user_name: userName,
+            user_name: user.name,
+            user_email: user.email,
+            roll_no: user.rollNo,
             timestamp: new Date().toISOString()
         });
         
+        // Admin notification
+        sendAdminNotification(user, 'seen_announcement');
+        
+        document.getElementById('ann-' + id).style.opacity = '0.5';
         alert('✅ Marked as seen!');
+    }
+
+    // Like announcement with activity log
+    function likeAnnouncement(id) {
+        const user = getCurrentUser();
+        if (!user) return;
+        
+        // Log activity
+        logActivity(user.rollNo, 'like', `Liked announcement #${id}`);
+        
+        // Save like
+        db.ref('likes').push({
+            announcement_id: id,
+            user_name: user.name,
+            user_email: user.email,
+            roll_no: user.rollNo,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Admin notification
+        sendAdminNotification(user, 'liked_announcement');
+        
+        alert('❤️ Liked!');
     }
 
     // Check maintenance
@@ -174,9 +370,20 @@
 
     // Logout
     function logout() {
-        sessionStorage.removeItem('user_name');
+        const user = getCurrentUser();
+        if (user) {
+            logActivity(user.rollNo, 'logout', 'User logged out');
+        }
+        localStorage.removeItem('sk_user_data');
         location.reload();
     }
+
+    // Expose functions globally
+    window.markAsSeen = markAsSeen;
+    window.likeAnnouncement = likeAnnouncement;
+    window.logout = logout;
+    window.generateIDCard = generateIDCard;
+    window.sendAdminNotification = sendAdminNotification;
     </script>
 </body>
 </html>

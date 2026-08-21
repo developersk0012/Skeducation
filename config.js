@@ -1,4 +1,10 @@
-// Firebase Configuration
+// ============================================
+// SK EDUCATION - CONFIGURATION
+// ============================================
+
+// ============================================
+// 1. FIREBASE CONFIGURATION
+// ============================================
 const firebaseConfig = {
     apiKey: "AIzaSyAEA_jznrLsOcIJ5jR0qmBQwigStJ4RiAw",
     authDomain: "my-last-education.firebaseapp.com",
@@ -12,40 +18,55 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Telegram Configuration
-const TELEGRAM_BOT_TOKEN = '7543926628:AAH8gY72WZDw-q1F4eIFYu13GaTnRQY-EMc';
-const TELEGRAM_CHAT_ID = '6416284194';
+// ============================================
+// 2. ADMIN EMAIL
+// ============================================
 const ADMIN_EMAIL = 'satendrakkushwaha12@gmail.com';
+const WEBSITE_URL = 'https://skeducation.vercel.app/';
 
-// Batch Details
+// ============================================
+// 3. BATCH DETAILS
+// ============================================
 const BATCHES = {
     1: {
-        name: 'Khazana Batch',
+        name: '🏆 Khazana Batch',
         image: 'https://i.ibb.co/7tJkXSRJ/IMG-20260820-221756-560.jpg',
         description: 'Morning Batch - Complete Study Material'
     },
     2: {
-        name: 'Disha Online Classes',
+        name: '🌟 Disha Online Classes',
         image: 'https://i.ibb.co/pBGDQq8m/1771220242-10th-batch.webp',
         description: 'Evening Batch - Expert Guidance'
     },
     3: {
-        name: 'Target Board',
+        name: '🎯 Target Board',
         image: 'https://i.ibb.co/KcDw1wwN/IMG-20260820-222646-987.jpg',
         description: 'Weekend Batch - Board Exam Preparation'
     }
 };
 
-// Categories
+// ============================================
+// 4. CATEGORIES
+// ============================================
 const CATEGORIES = {
     'science': '🔬 Science',
-    'math': '📐 Mathematics', 
+    'math': '📐 Mathematics',
     'hindi': '📝 Hindi',
     'sanskrit': '🕉️ Sanskrit',
     'sst': '🌍 Social Studies'
 };
 
-// Subcategories
+const CATEGORY_ICONS = {
+    'science': '🔬',
+    'math': '📐',
+    'hindi': '📝',
+    'sanskrit': '🕉️',
+    'sst': '🌍'
+};
+
+// ============================================
+// 5. SUBCATEGORIES
+// ============================================
 const SUBCATEGORIES = {
     'science': {
         'physics': '⚡ Physics',
@@ -75,79 +96,97 @@ const SUBCATEGORIES = {
     }
 };
 
-// Category Icons
-const CATEGORY_ICONS = {
-    'science': '🔬',
-    'math': '📐',
-    'hindi': '📝',
-    'sanskrit': '🕉️',
-    'sst': '🌍'
-};
+// ============================================
+// 6. UTILITY FUNCTIONS
+// ============================================
 
-// Subcategory Icons
-const SUBCATEGORY_ICONS = {
-    'physics': '⚡',
-    'chemistry': '🧪',
-    'biology': '🧬',
-    'objective': 'x²',
-    'subjective': '📐',
-    'notes': '📓',
-    'grammar': '📝',
-    'book_notes': '📖',
-    'imp_question': '✍️',
-    'history': '🏛️',
-    'geography': '🗺️',
-    'civics': '⚖️',
-    'economics': '📊'
-};
-
-// Send Telegram Notification
-function sendTelegramNotification(userName) {
-    const message = `🆕 New User Joined!\n\n👤 Name: ${userName}\n📅 Time: ${new Date().toLocaleString()}\n🌐 IP: ${window.location.hostname}`;
-    
-    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-            parse_mode: 'HTML'
-        })
-    }).catch(err => console.error('Telegram error:', err));
-}
-
-// Send Announcement to Telegram
-function sendTelegramAnnouncement(message, userName) {
-    const text = `📢 New Announcement\n\n📝 ${message}\n\n👤 Sent by: ${userName || 'Admin'}\n📅 ${new Date().toLocaleString()}`;
-    
-    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: text,
-            parse_mode: 'HTML'
-        })
-    }).catch(err => console.error('Telegram error:', err));
-}
-
-// Send Seen Notification
-function sendSeenNotification(announcementId, userName) {
-    const text = `👀 Announcement Seen\n\n📢 ID: #${announcementId}\n👤 Seen by: ${userName}\n⏰ ${new Date().toLocaleString()}`;
-    
-    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: text,
-            parse_mode: 'HTML'
-        })
-    }).catch(err => console.error('Telegram error:', err));
-}
-
-// Get URL parameters
 function getUrlParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
 }
+
+// Get current user
+function getCurrentUser() {
+    const userData = localStorage.getItem('sk_user_data');
+    if (userData) {
+        try {
+            return JSON.parse(userData);
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
+}
+
+// Check if user is logged in
+function isUserLoggedIn() {
+    return getCurrentUser() !== null;
+}
+
+// Generate Roll Number
+async function generateRollNumber() {
+    const snapshot = await db.ref('users').once('value');
+    const data = snapshot.val();
+    if (data) {
+        return Object.keys(data).length + 1;
+    }
+    return 1;
+}
+
+// Send Email via EmailJS (or other service)
+function sendLoginEmail(userData) {
+    // Using EmailJS or any email service
+    // For now, we'll use mailto: as fallback
+    const subject = encodeURIComponent('Welcome to SK Education - Login Confirmation');
+    const body = encodeURIComponent(`
+Dear ${userData.name},
+
+You have successfully logged into SK Education!
+
+📅 Login Time: ${new Date().toLocaleString()}
+👤 Name: ${userData.name}
+📧 Email: ${userData.email}
+🎓 Class: Class 10
+🆔 Roll No: ${userData.rollNo}
+
+🌐 Website: ${WEBSITE_URL}
+
+Keep learning and growing!
+
+-
+SK Education Team
+    `);
+    
+    // Open email client
+    window.open(`mailto:${userData.email}?subject=${subject}&body=${body}`);
+}
+
+// Log user activity
+function logActivity(userId, action, details) {
+    db.ref('activities').push({
+        user_id: userId,
+        user_name: getCurrentUser()?.name || 'Unknown',
+        action: action,
+        details: details || '',
+        timestamp: new Date().toISOString()
+    });
+}
+
+// ============================================
+// 7. EXPOSE GLOBALLY
+// ============================================
+window.db = db;
+window.getCurrentUser = getCurrentUser;
+window.isUserLoggedIn = isUserLoggedIn;
+window.generateRollNumber = generateRollNumber;
+window.sendLoginEmail = sendLoginEmail;
+window.logActivity = logActivity;
+window.getUrlParam = getUrlParam;
+window.BATCHES = BATCHES;
+window.CATEGORIES = CATEGORIES;
+window.CATEGORY_ICONS = CATEGORY_ICONS;
+window.SUBCATEGORIES = SUBCATEGORIES;
+window.ADMIN_EMAIL = ADMIN_EMAIL;
+window.WEBSITE_URL = WEBSITE_URL;
+
+console.log('✅ SK Education Config Loaded!');

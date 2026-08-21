@@ -32,23 +32,61 @@
                 <div class="admin-header">
                     <div>
                         <h2 style="color:white;">🔐 Admin Panel</h2>
-                        <small style="color:#a5b4fc;">Manage your education platform</small>
+                        <small style="color:#a5b4fc;">Real-time user activity dashboard</small>
                     </div>
                     <div style="display:flex;gap:10px;align-items:center;">
+                        <span id="userCount" style="color:#4cc9f0;">👥 Users: 0</span>
                         <button onclick="logoutAdmin()" class="btn-danger" style="padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Logout</button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalActivities">0</div>
+                        <div class="stat-label">Total Activities</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalLikes">0</div>
+                        <div class="stat-label">Total Likes</div>
                     </div>
                 </div>
 
                 <!-- Tabs -->
                 <div class="admin-tabs">
-                    <button class="admin-tab active" onclick="showAdminTab('add', this)">➕ Add Material</button>
-                    <button class="admin-tab" onclick="showAdminTab('announce', this)">📢 Announcements</button>
-                    <button class="admin-tab" onclick="showAdminTab('manage', this)">📋 Manage</button>
+                    <button class="admin-tab active" onclick="showAdminTab('users', this)">👥 Users</button>
+                    <button class="admin-tab" onclick="showAdminTab('activities', this)">📊 Activities</button>
+                    <button class="admin-tab" onclick="showAdminTab('add', this)">➕ Add Material</button>
+                    <button class="admin-tab" onclick="showAdminTab('announce', this)">📢 Announce</button>
                     <button class="admin-tab" onclick="showAdminTab('settings', this)">⚙️ Settings</button>
                 </div>
 
+                <!-- Tab: Users -->
+                <div id="tab-users" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>👥 All Users</h3>
+                        <div id="usersList">Loading...</div>
+                    </div>
+                    <div class="admin-card" style="margin-top:20px;">
+                        <h3>📁 User Folders</h3>
+                        <div id="userFolders">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Tab: Activities -->
+                <div id="tab-activities" class="admin-tab-content" style="display:none;">
+                    <div class="admin-card">
+                        <h3>📊 Recent Activities</h3>
+                        <div id="activitiesList">Loading...</div>
+                    </div>
+                </div>
+
                 <!-- Tab: Add Material -->
-                <div id="tab-add" class="admin-tab-content">
+                <div id="tab-add" class="admin-tab-content" style="display:none;">
                     <div class="admin-card">
                         <h3>📤 Upload Study Material</h3>
                         <form id="addMaterialForm">
@@ -127,14 +165,6 @@
                     </div>
                 </div>
 
-                <!-- Tab: Manage -->
-                <div id="tab-manage" class="admin-tab-content" style="display:none;">
-                    <div class="admin-card">
-                        <h3>📋 All Materials</h3>
-                        <div id="manageList">Loading...</div>
-                    </div>
-                </div>
-
                 <!-- Tab: Settings -->
                 <div id="tab-settings" class="admin-tab-content" style="display:none;">
                     <div class="admin-card">
@@ -145,17 +175,6 @@
                             <p style="color:#a5b4fc;font-size:14px;">When enabled, users will see a maintenance page</p>
                             <button id="maintenanceToggle" class="btn-warning" onclick="toggleMaintenance()">Turn ON</button>
                             <div id="maintenanceStatus" style="margin-top:10px;color:#a5b4fc;">Current: OFF</div>
-                        </div>
-
-                        <hr style="border-color:rgba(255,255,255,0.1);margin:20px 0;">
-
-                        <div class="setting-item">
-                            <h4>📊 Statistics</h4>
-                            <div id="statsDisplay">
-                                <p>Total Users: <span id="totalUsers">0</span></p>
-                                <p>Total Materials: <span id="totalMaterials">0</span></p>
-                                <p>Total Announcements: <span id="totalAnnouncements">0</span></p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -171,7 +190,6 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         loadAdminData();
-        loadStats();
     } else {
         document.getElementById('loginScreen').style.display = 'block';
         document.getElementById('adminPanel').style.display = 'none';
@@ -246,8 +264,6 @@
             document.getElementById('addSuccess').style.display = 'block';
             setTimeout(() => document.getElementById('addSuccess').style.display = 'none', 3000);
             this.reset();
-            loadManageList();
-            loadStats();
         });
     });
 
@@ -267,10 +283,6 @@
         };
         
         db.ref('announcements').push(data).then(() => {
-            // Send to Telegram
-            const userName = sessionStorage.getItem('admin_name') || 'Admin';
-            sendTelegramAnnouncement(message, userName);
-            
             document.getElementById('announceSuccess').style.display = 'block';
             setTimeout(() => document.getElementById('announceSuccess').style.display = 'none', 3000);
             document.getElementById('announceMsg').value = '';
@@ -280,8 +292,113 @@
 
     // Load admin data
     function loadAdminData() {
+        loadUsers();
+        loadActivities();
         loadAnnounceList();
-        loadManageList();
+        loadStats();
+        loadUserFolders();
+    }
+
+    // Load users
+    function loadUsers() {
+        db.ref('users').on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
+            let count = 0;
+            
+            if (data) {
+                const keys = Object.keys(data);
+                count = keys.length;
+                keys.forEach(function(key) {
+                    const user = data[key];
+                    html += `
+                        <div class="admin-list-item">
+                            <div>
+                                <strong>${user.name}</strong>
+                                <small>📧 ${user.email} • 🆔 Roll ${user.rollNo}</small>
+                            </div>
+                            <span style="color:#4cc9f0;font-size:12px;">${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('usersList').innerHTML = html || '<p style="color:#a5b4fc;">No users registered</p>';
+            document.getElementById('totalUsers').textContent = count;
+            document.getElementById('userCount').textContent = `👥 Users: ${count}`;
+        });
+    }
+
+    // Load user folders
+    function loadUserFolders() {
+        db.ref('users').on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
+            
+            if (data) {
+                const keys = Object.keys(data);
+                keys.forEach(function(key) {
+                    const user = data[key];
+                    html += `
+                        <div class="user-folder" style="background:rgba(67,97,238,0.1);border-radius:10px;padding:15px;margin-bottom:10px;border-left:3px solid #4361ee;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                                <div>
+                                    <strong style="color:white;">📁 ${user.name}</strong>
+                                    <div style="font-size:12px;color:#a5b4fc;">Roll No: ${user.rollNo} • ${user.email}</div>
+                                </div>
+                                <div style="display:flex;gap:8px;">
+                                    <span style="background:rgba(76,201,240,0.2);color:#4cc9f0;padding:2px 10px;border-radius:12px;font-size:11px;">
+                                        ${user.lastLogin ? '🟢 Online' : '⚪ Offline'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="font-size:12px;color:#6a7a9e;margin-top:5px;">
+                                📅 Joined: ${user.createdAt ? new Date(user.createdAt).toLocaleString() : 'N/A'}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('userFolders').innerHTML = html || '<p style="color:#a5b4fc;">No users</p>';
+        });
+    }
+
+    // Load activities
+    function loadActivities() {
+        db.ref('activities').orderByChild('timestamp').limitToLast(50).on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
+            let count = 0;
+            let likes = 0;
+            
+            if (data) {
+                const keys = Object.keys(data).reverse();
+                count = keys.length;
+                keys.forEach(function(key) {
+                    const activity = data[key];
+                    const icon = activity.action === 'login' ? '🟢' : 
+                                activity.action === 'seen' ? '👀' : 
+                                activity.action === 'like' ? '❤️' : '📌';
+                    
+                    if (activity.action === 'like') likes++;
+                    
+                    html += `
+                        <div class="admin-list-item">
+                            <div>
+                                <strong>${icon} ${activity.user_name}</strong>
+                                <small>${activity.action} ${activity.details || ''}</small>
+                            </div>
+                            <span style="color:#6a7a9e;font-size:12px;">${activity.timestamp ? new Date(activity.timestamp).toLocaleString() : ''}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('activitiesList').innerHTML = html || '<p style="color:#a5b4fc;">No activities yet</p>';
+            document.getElementById('totalActivities').textContent = count;
+            document.getElementById('totalLikes').textContent = likes;
+        });
     }
 
     // Load announcements list
@@ -319,46 +436,7 @@
         }
     }
 
-    // Load manage list
-    function loadManageList() {
-        db.ref('pdfs').orderByChild('timestamp').on('value', function(snap) {
-            const data = snap.val();
-            let html = '';
-            
-            if (data) {
-                const keys = Object.keys(data).reverse();
-                keys.forEach(function(key) {
-                    const item = data[key];
-                    const batchName = BATCHES[item.batch_id]?.name || 'Unknown';
-                    const catName = CATEGORIES[item.category_id] || 'Unknown';
-                    
-                    html += `
-                        <div class="admin-list-item">
-                            <div>
-                                <strong>${item.title}</strong>
-                                <small>${batchName} • ${catName} • ${item.type}</small>
-                            </div>
-                            <button onclick="deleteMaterial('${key}')" class="btn-danger-small">✕ Delete</button>
-                        </div>
-                    `;
-                });
-            } else {
-                html = '<p style="color:#a5b4fc;">No materials uploaded</p>';
-            }
-            
-            document.getElementById('manageList').innerHTML = html;
-        });
-    }
-
-    // Delete material
-    function deleteMaterial(id) {
-        if (confirm('Delete this material?')) {
-            db.ref('pdfs/' + id).remove();
-            loadStats();
-        }
-    }
-
-    // Load statistics
+    // Load stats
     function loadStats() {
         db.ref('users').on('value', function(snap) {
             const data = snap.val();
@@ -397,6 +475,11 @@
         sessionStorage.removeItem('admin_logged_in');
         location.reload();
     }
+
+    // Expose functions
+    window.deleteAnnouncement = deleteAnnouncement;
+    window.toggleMaintenance = toggleMaintenance;
+    window.logoutAdmin = logoutAdmin;
     </script>
 </body>
 </html>
