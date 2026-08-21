@@ -21,6 +21,7 @@
             color: white;
         }
 
+        /* ===== ADMIN LOGIN ===== */
         .admin-login {
             max-width: 400px;
             margin: 80px auto;
@@ -30,21 +31,26 @@
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
         .admin-login .lock-icon {
             font-size: 50px;
+            margin-bottom: 10px;
         }
+
         .admin-login h2 {
             color: white;
             font-size: 28px;
-            margin: 10px 0 5px;
+            margin-bottom: 5px;
         }
+
         .admin-login p {
             color: #a5b4fc;
             font-size: 15px;
             margin-bottom: 25px;
         }
+
         .admin-login input {
             width: 100%;
             padding: 14px 18px;
@@ -54,11 +60,15 @@
             color: white;
             font-size: 16px;
             margin-bottom: 15px;
+            transition: all 0.3s ease;
         }
+
         .admin-login input:focus {
             outline: none;
             border-color: #4361ee;
+            background: rgba(255, 255, 255, 0.08);
         }
+
         .admin-login button {
             width: 100%;
             padding: 15px;
@@ -69,16 +79,21 @@
             font-size: 18px;
             font-weight: 700;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
+
         .admin-login button:hover {
             transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(67, 97, 238, 0.35);
         }
+
         .admin-login .error {
             color: #f72585;
             margin-top: 10px;
             display: none;
         }
 
+        /* ===== ADMIN PANEL ===== */
         .admin-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -116,6 +131,7 @@
             font-weight: 800;
             font-size: 16px;
             color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
 
         .admin-header-left h2 {
@@ -137,14 +153,6 @@
             flex-wrap: wrap;
         }
 
-        .user-count-badge {
-            background: rgba(76, 201, 240, 0.15);
-            color: #4cc9f0;
-            padding: 6px 18px;
-            border-radius: 50px;
-            font-size: 14px;
-        }
-
         .logout-btn {
             padding: 10px 22px;
             background: rgba(247, 37, 133, 0.15);
@@ -154,12 +162,14 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
             background: rgba(247, 37, 133, 0.3);
         }
 
+        /* ===== STATS ===== */
         .admin-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -188,6 +198,7 @@
             margin-top: 4px;
         }
 
+        /* ===== TABS ===== */
         .admin-tabs {
             display: flex;
             gap: 8px;
@@ -214,12 +225,14 @@
         .admin-tab.active {
             background: linear-gradient(90deg, #4361ee, #f72585);
             color: white;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
         }
 
         .admin-tab:hover:not(.active) {
             background: rgba(255, 255, 255, 0.06);
         }
 
+        /* ===== CARDS ===== */
         .admin-card {
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(8px);
@@ -259,6 +272,7 @@
             background: rgba(255, 255, 255, 0.05);
             color: white;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
 
         .admin-card input:focus,
@@ -266,6 +280,12 @@
         .admin-card textarea:focus {
             outline: none;
             border-color: #4361ee;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .admin-card input::placeholder,
+        .admin-card textarea::placeholder {
+            color: #4a5a7a;
         }
 
         .admin-card select option {
@@ -281,10 +301,12 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
             transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.3);
         }
 
         .btn-danger-small {
@@ -295,6 +317,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
+            transition: 0.3s;
         }
 
         .btn-danger-small:hover {
@@ -309,6 +332,11 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-warning:hover {
+            transform: scale(1.02);
         }
 
         .btn-success {
@@ -319,8 +347,14 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
+            transition: 0.3s;
         }
 
+        .btn-success:hover {
+            transform: scale(1.02);
+        }
+
+        /* ===== LISTS ===== */
         .admin-list-item {
             display: flex;
             justify-content: space-between;
@@ -342,12 +376,19 @@
             font-size: 13px;
         }
 
+        .admin-list-item .time {
+            color: #6a7a9e;
+            font-size: 12px;
+        }
+
+        /* ===== USER FOLDERS ===== */
         .user-folder {
             background: rgba(67, 97, 238, 0.08);
             border-radius: 12px;
             padding: 15px 18px;
             margin-bottom: 10px;
             border-left: 3px solid #4361ee;
+            transition: all 0.3s ease;
         }
 
         .user-folder:hover {
@@ -387,6 +428,7 @@
             margin-top: 5px;
         }
 
+        /* ===== SETTINGS ===== */
         .setting-item {
             padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -413,6 +455,18 @@
 
         .admin-tab-content.active {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .success-msg {
@@ -427,6 +481,7 @@
             padding: 20px;
         }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .admin-container {
                 padding: 15px;
@@ -464,11 +519,23 @@
                 padding: 30px 20px;
             }
         }
+
+        @media (max-width: 480px) {
+            .admin-stat-value {
+                font-size: 24px;
+            }
+            .admin-tab {
+                font-size: 13px;
+                padding: 8px 14px;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="app">
+        <!-- ======================================== -->
         <!-- ADMIN LOGIN -->
+        <!-- ======================================== -->
         <div id="loginScreen" style="display:none;">
             <div class="admin-login">
                 <div class="lock-icon">🔐</div>
@@ -482,71 +549,52 @@
             </div>
         </div>
 
+        <!-- ======================================== -->
         <!-- ADMIN PANEL -->
+        <!-- ======================================== -->
         <div id="adminPanel" style="display:none;">
             <div class="admin-container">
-                <!-- Header -->
+                <!-- HEADER -->
                 <div class="admin-header">
                     <div class="admin-header-left">
                         <div class="logo-icon">SK</div>
                         <div>
                             <h2>🔐 Admin Panel</h2>
-                            <small>Real-time user activity dashboard</small>
+                            <small>Manage your education platform</small>
                         </div>
                     </div>
                     <div class="admin-header-right">
-                        <span class="user-count-badge" id="userCount">👥 Users: 0</span>
                         <button onclick="logoutAdmin()" class="logout-btn">Logout</button>
                     </div>
                 </div>
 
-                <!-- Stats -->
+                <!-- STATS -->
                 <div class="admin-stats">
                     <div class="admin-stat-card">
-                        <div class="admin-stat-value" id="totalUsers">0</div>
-                        <div class="admin-stat-label">Total Users</div>
+                        <div class="admin-stat-value" id="totalMaterials">0</div>
+                        <div class="admin-stat-label">Total Materials</div>
                     </div>
                     <div class="admin-stat-card">
-                        <div class="admin-stat-value" id="totalActivities">0</div>
-                        <div class="admin-stat-label">Total Activities</div>
+                        <div class="admin-stat-value" id="totalAnnouncements">0</div>
+                        <div class="admin-stat-label">Total Announcements</div>
                     </div>
                     <div class="admin-stat-card">
-                        <div class="admin-stat-value" id="totalLikes">0</div>
-                        <div class="admin-stat-label">Total Likes</div>
+                        <div class="admin-stat-value" id="totalSeen">0</div>
+                        <div class="admin-stat-label">Total Seen</div>
                     </div>
                 </div>
 
-                <!-- Tabs -->
+                <!-- TABS -->
                 <div class="admin-tabs">
-                    <button class="admin-tab active" onclick="showAdminTab('users', this)">👥 Users</button>
-                    <button class="admin-tab" onclick="showAdminTab('activities', this)">📊 Activities</button>
-                    <button class="admin-tab" onclick="showAdminTab('add', this)">➕ Add Material</button>
+                    <button class="admin-tab active" onclick="showAdminTab('add', this)">➕ Add Material</button>
                     <button class="admin-tab" onclick="showAdminTab('announce', this)">📢 Announce</button>
+                    <button class="admin-tab" onclick="showAdminTab('manage', this)">📋 Manage</button>
+                    <button class="admin-tab" onclick="showAdminTab('seen', this)">👀 Seen Logs</button>
                     <button class="admin-tab" onclick="showAdminTab('settings', this)">⚙️ Settings</button>
                 </div>
 
-                <!-- Tab: Users -->
-                <div id="tab-users" class="admin-tab-content active">
-                    <div class="admin-card">
-                        <h3>👥 All Users</h3>
-                        <div id="usersList"><div class="empty-msg">Loading...</div></div>
-                    </div>
-                    <div class="admin-card">
-                        <h3>📁 User Folders</h3>
-                        <div id="userFolders"><div class="empty-msg">Loading...</div></div>
-                    </div>
-                </div>
-
-                <!-- Tab: Activities -->
-                <div id="tab-activities" class="admin-tab-content">
-                    <div class="admin-card">
-                        <h3>📊 Recent Activities</h3>
-                        <div id="activitiesList"><div class="empty-msg">Loading...</div></div>
-                    </div>
-                </div>
-
-                <!-- Tab: Add Material -->
-                <div id="tab-add" class="admin-tab-content">
+                <!-- TAB: ADD MATERIAL -->
+                <div id="tab-add" class="admin-tab-content active">
                     <div class="admin-card">
                         <h3>📤 Upload Study Material</h3>
                         <form id="addMaterialForm">
@@ -605,7 +653,7 @@
                     </div>
                 </div>
 
-                <!-- Tab: Announcements -->
+                <!-- TAB: ANNOUNCE -->
                 <div id="tab-announce" class="admin-tab-content">
                     <div class="admin-card">
                         <h3>📢 Send Announcement</h3>
@@ -624,7 +672,23 @@
                     </div>
                 </div>
 
-                <!-- Tab: Settings -->
+                <!-- TAB: MANAGE -->
+                <div id="tab-manage" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>📋 All Materials</h3>
+                        <div id="manageList"><div class="empty-msg">Loading...</div></div>
+                    </div>
+                </div>
+
+                <!-- TAB: SEEN LOGS -->
+                <div id="tab-seen" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>👀 Seen Logs</h3>
+                        <div id="seenList"><div class="empty-msg">Loading...</div></div>
+                    </div>
+                </div>
+
+                <!-- TAB: SETTINGS -->
                 <div id="tab-settings" class="admin-tab-content">
                     <div class="admin-card">
                         <h3>⚙️ Settings</h3>
@@ -641,318 +705,305 @@
     </div>
 
     <script>
-    // ========================================
-    // CHECK ADMIN LOGIN
-    // ========================================
-    const adminLoggedIn = sessionStorage.getItem('admin_logged_in');
-    
-    if (adminLoggedIn === 'true') {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        loadAdminData();
-    } else {
-        document.getElementById('loginScreen').style.display = 'block';
-        document.getElementById('adminPanel').style.display = 'none';
-    }
+        // ========================================
+        // CHECK ADMIN LOGIN
+        // ========================================
+        const adminLoggedIn = sessionStorage.getItem('admin_logged_in');
 
-    // ========================================
-    // ADMIN LOGIN
-    // ========================================
-    document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const password = document.getElementById('adminPassword').value;
-        
-        if (password === 'saten@12345') {
-            sessionStorage.setItem('admin_logged_in', 'true');
-            location.reload();
+        if (adminLoggedIn === 'true') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            loadAdminData();
         } else {
-            document.getElementById('loginError').style.display = 'block';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
         }
-    });
 
-    // ========================================
-    // TAB SWITCHING
-    // ========================================
-    function showAdminTab(tab, el) {
-        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        
-        document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + tab).classList.add('active');
-    }
+        // ========================================
+        // ADMIN LOGIN
+        // ========================================
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
 
-    // ========================================
-    // SUBCATEGORY DROPDOWN
-    // ========================================
-    document.getElementById('matCategory').addEventListener('change', function() {
-        const cat = this.value;
-        const subSelect = document.getElementById('matSubcategory');
-        subSelect.innerHTML = '<option value="">Select Subcategory</option>';
-        
-        if (cat && SUBCATEGORIES[cat]) {
-            for (let [key, name] of Object.entries(SUBCATEGORIES[cat])) {
-                subSelect.innerHTML += `<option value="${key}">${name}</option>`;
-            }
-        }
-    });
-
-    // ========================================
-    // ADD MATERIAL
-    // ========================================
-    document.getElementById('addMaterialForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const batch_id = document.getElementById('matBatch').value;
-        const category_id = document.getElementById('matCategory').value;
-        const subcategory_id = document.getElementById('matSubcategory').value;
-        const type = document.getElementById('matType').value;
-        const title = document.getElementById('matTitle').value;
-        const description = document.getElementById('matDesc').value;
-        const file_path = document.getElementById('matFileUrl').value;
-        const thumbnail = document.getElementById('matThumbnail').value;
-        
-        if (!batch_id || !category_id || !title || !file_path) {
-            alert('Please fill all required fields!');
-            return;
-        }
-        
-        const data = {
-            batch_id: parseInt(batch_id),
-            category_id: category_id,
-            subcategory_id: subcategory_id || '',
-            type: type,
-            title: title,
-            description: description || '',
-            file_path: file_path,
-            thumbnail: thumbnail || '',
-            timestamp: new Date().toISOString()
-        };
-        
-        db.ref('pdfs').push(data).then(() => {
-            document.getElementById('addSuccess').style.display = 'block';
-            setTimeout(() => document.getElementById('addSuccess').style.display = 'none', 3000);
-            this.reset();
-        });
-    });
-
-    // ========================================
-    // SEND ANNOUNCEMENT
-    // ========================================
-    document.getElementById('announceForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const message = document.getElementById('announceMsg').value;
-        
-        if (!message) {
-            alert('Please enter a message!');
-            return;
-        }
-        
-        const data = {
-            message: message,
-            timestamp: new Date().toISOString()
-        };
-        
-        db.ref('announcements').push(data).then(() => {
-            document.getElementById('announceSuccess').style.display = 'block';
-            setTimeout(() => document.getElementById('announceSuccess').style.display = 'none', 3000);
-            document.getElementById('announceMsg').value = '';
-            loadAnnounceList();
-        });
-    });
-
-    // ========================================
-    // LOAD ADMIN DATA
-    // ========================================
-    function loadAdminData() {
-        loadUsers();
-        loadActivities();
-        loadAnnounceList();
-        loadStats();
-        loadUserFolders();
-    }
-
-    // ========================================
-    // LOAD USERS
-    // ========================================
-    function loadUsers() {
-        db.ref('users').on('value', function(snap) {
-            const data = snap.val();
-            let html = '';
-            let count = 0;
-            
-            if (data) {
-                const keys = Object.keys(data);
-                count = keys.length;
-                keys.forEach(function(key) {
-                    const user = data[key];
-                    html += `
-                        <div class="admin-list-item">
-                            <div>
-                                <strong>${user.name}</strong>
-                                <small>📧 ${user.email} • 🆔 Roll ${user.rollNo}</small>
-                            </div>
-                            <span style="color:#6a7a9e;font-size:12px;">${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}</span>
-                        </div>
-                    `;
-                });
-            }
-            
-            document.getElementById('usersList').innerHTML = html || '<div class="empty-msg">No users registered</div>';
-            document.getElementById('totalUsers').textContent = count;
-            document.getElementById('userCount').textContent = `👥 Users: ${count}`;
-        });
-    }
-
-    // ========================================
-    // LOAD USER FOLDERS
-    // ========================================
-    function loadUserFolders() {
-        db.ref('users').on('value', function(snap) {
-            const data = snap.val();
-            let html = '';
-            
-            if (data) {
-                const keys = Object.keys(data);
-                keys.forEach(function(key) {
-                    const user = data[key];
-                    html += `
-                        <div class="user-folder">
-                            <div class="folder-header">
-                                <div>
-                                    <div class="folder-name">📁 ${user.name}</div>
-                                    <div class="folder-detail">Roll No: ${user.rollNo} • ${user.email}</div>
-                                </div>
-                                <div>
-                                    <span class="status-badge">${user.lastLogin ? '🟢 Online' : '⚪ Offline'}</span>
-                                </div>
-                            </div>
-                            <div class="folder-date">📅 Joined: ${user.createdAt ? new Date(user.createdAt).toLocaleString() : 'N/A'}</div>
-                        </div>
-                    `;
-                });
-            }
-            
-            document.getElementById('userFolders').innerHTML = html || '<div class="empty-msg">No users</div>';
-        });
-    }
-
-    // ========================================
-    // LOAD ACTIVITIES
-    // ========================================
-    function loadActivities() {
-        db.ref('activities').orderByChild('timestamp').limitToLast(50).on('value', function(snap) {
-            const data = snap.val();
-            let html = '';
-            let count = 0;
-            let likes = 0;
-            
-            if (data) {
-                const keys = Object.keys(data).reverse();
-                count = keys.length;
-                keys.forEach(function(key) {
-                    const activity = data[key];
-                    const icon = activity.action === 'login' ? '🟢' : 
-                                activity.action === 'seen' ? '👀' : 
-                                activity.action === 'like' ? '❤️' : '📌';
-                    
-                    if (activity.action === 'like') likes++;
-                    
-                    html += `
-                        <div class="admin-list-item">
-                            <div>
-                                <strong>${icon} ${activity.user_name}</strong>
-                                <small>${activity.action} ${activity.details || ''}</small>
-                            </div>
-                            <span style="color:#6a7a9e;font-size:12px;">${activity.timestamp ? new Date(activity.timestamp).toLocaleString() : ''}</span>
-                        </div>
-                    `;
-                });
-            }
-            
-            document.getElementById('activitiesList').innerHTML = html || '<div class="empty-msg">No activities yet</div>';
-            document.getElementById('totalActivities').textContent = count;
-            document.getElementById('totalLikes').textContent = likes;
-        });
-    }
-
-    // ========================================
-    // LOAD ANNOUNCEMENTS LIST
-    // ========================================
-    function loadAnnounceList() {
-        db.ref('announcements').orderByChild('timestamp').limitToLast(10).on('value', function(snap) {
-            const data = snap.val();
-            let html = '';
-            
-            if (data) {
-                const keys = Object.keys(data).reverse();
-                keys.forEach(function(key) {
-                    const ann = data[key];
-                    html += `
-                        <div class="admin-list-item">
-                            <div>
-                                <strong>${ann.message}</strong>
-                                <small>${new Date(ann.timestamp).toLocaleString()}</small>
-                            </div>
-                            <button onclick="deleteAnnouncement('${key}')" class="btn-danger-small">✕ Delete</button>
-                        </div>
-                    `;
-                });
+            if (password === 'saten@12345') {
+                sessionStorage.setItem('admin_logged_in', 'true');
+                location.reload();
             } else {
-                html = '<div class="empty-msg">No announcements yet</div>';
+                document.getElementById('loginError').style.display = 'block';
             }
-            
-            document.getElementById('announceList').innerHTML = html;
         });
-    }
 
-    // ========================================
-    // DELETE ANNOUNCEMENT
-    // ========================================
-    function deleteAnnouncement(id) {
-        if (confirm('Delete this announcement?')) {
-            db.ref('announcements/' + id).remove();
+        // ========================================
+        // TAB SWITCHING
+        // ========================================
+        function showAdminTab(tab, el) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
         }
-    }
 
-    // ========================================
-    // LOAD STATS
-    // ========================================
-    function loadStats() {
-        db.ref('users').on('value', function(snap) {
-            const data = snap.val();
-            document.getElementById('totalUsers').textContent = data ? Object.keys(data).length : 0;
+        // ========================================
+        // SUBCATEGORY DROPDOWN
+        // ========================================
+        document.getElementById('matCategory').addEventListener('change', function() {
+            const cat = this.value;
+            const subSelect = document.getElementById('matSubcategory');
+            subSelect.innerHTML = '<option value="">Select Subcategory</option>';
+
+            if (cat && SUBCATEGORIES[cat]) {
+                for (let [key, name] of Object.entries(SUBCATEGORIES[cat])) {
+                    subSelect.innerHTML += `<option value="${key}">${name}</option>`;
+                }
+            }
         });
-        
-        db.ref('settings/maintenance').on('value', function(snap) {
-            const status = snap.val() === 'on' ? 'ON' : 'OFF';
-            document.getElementById('maintenanceStatus').textContent = 'Current: ' + status;
-            document.getElementById('maintenanceToggle').textContent = status === 'ON' ? 'Turn OFF' : 'Turn ON';
-            document.getElementById('maintenanceToggle').className = status === 'ON' ? 'btn-success' : 'btn-warning';
+
+        // ========================================
+        // ADD MATERIAL
+        // ========================================
+        document.getElementById('addMaterialForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const batch_id = document.getElementById('matBatch').value;
+            const category_id = document.getElementById('matCategory').value;
+            const subcategory_id = document.getElementById('matSubcategory').value;
+            const type = document.getElementById('matType').value;
+            const title = document.getElementById('matTitle').value;
+            const description = document.getElementById('matDesc').value;
+            const file_path = document.getElementById('matFileUrl').value;
+            const thumbnail = document.getElementById('matThumbnail').value;
+
+            if (!batch_id || !category_id || !title || !file_path) {
+                alert('Please fill all required fields!');
+                return;
+            }
+
+            const data = {
+                batch_id: parseInt(batch_id),
+                category_id: category_id,
+                subcategory_id: subcategory_id || '',
+                type: type,
+                title: title,
+                description: description || '',
+                file_path: file_path,
+                thumbnail: thumbnail || '',
+                timestamp: new Date().toISOString()
+            };
+
+            db.ref('pdfs').push(data).then(() => {
+                document.getElementById('addSuccess').style.display = 'block';
+                setTimeout(() => document.getElementById('addSuccess').style.display = 'none', 3000);
+                this.reset();
+                loadManageList();
+                loadStats();
+            });
         });
-    }
 
-    // ========================================
-    // TOGGLE MAINTENANCE
-    // ========================================
-    function toggleMaintenance() {
-        db.ref('settings/maintenance').once('value', function(snap) {
-            const current = snap.val() === 'on' ? 'off' : 'on';
-            db.ref('settings/maintenance').set(current);
+        // ========================================
+        // SEND ANNOUNCEMENT
+        // ========================================
+        document.getElementById('announceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = document.getElementById('announceMsg').value;
+
+            if (!message) {
+                alert('Please enter a message!');
+                return;
+            }
+
+            const data = {
+                message: message,
+                timestamp: new Date().toISOString()
+            };
+
+            db.ref('announcements').push(data).then(() => {
+                document.getElementById('announceSuccess').style.display = 'block';
+                setTimeout(() => document.getElementById('announceSuccess').style.display = 'none', 3000);
+                document.getElementById('announceMsg').value = '';
+                loadAnnounceList();
+                loadStats();
+            });
         });
-    }
 
-    // ========================================
-    // LOGOUT ADMIN
-    // ========================================
-    function logoutAdmin() {
-        sessionStorage.removeItem('admin_logged_in');
-        location.reload();
-    }
+        // ========================================
+        // LOAD ADMIN DATA
+        // ========================================
+        function loadAdminData() {
+            loadManageList();
+            loadAnnounceList();
+            loadSeenList();
+            loadStats();
+        }
 
-    window.deleteAnnouncement = deleteAnnouncement;
-    window.toggleMaintenance = toggleMaintenance;
-    window.logoutAdmin = logoutAdmin;
-    window.showAdminTab = showAdminTab;
+        // ========================================
+        // LOAD MANAGE LIST
+        // ========================================
+        function loadManageList() {
+            db.ref('pdfs').orderByChild('timestamp').on('value', function(snap) {
+                const data = snap.val();
+                let html = '';
+
+                if (data) {
+                    const keys = Object.keys(data).reverse();
+                    keys.forEach(function(key) {
+                        const item = data[key];
+                        const batchName = BATCHES[item.batch_id]?.name || 'Unknown';
+                        const catName = CATEGORIES[item.category_id] || 'Unknown';
+
+                        html += `
+                            <div class="admin-list-item">
+                                <div>
+                                    <strong>${item.title}</strong>
+                                    <small>${batchName} • ${catName} • ${item.type}</small>
+                                </div>
+                                <button onclick="deleteMaterial('${key}')" class="btn-danger-small">✕ Delete</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<div class="empty-msg">No materials uploaded</div>';
+                }
+
+                document.getElementById('manageList').innerHTML = html;
+            });
+        }
+
+        // ========================================
+        // DELETE MATERIAL
+        // ========================================
+        function deleteMaterial(id) {
+            if (confirm('Delete this material?')) {
+                db.ref('pdfs/' + id).remove();
+                loadStats();
+            }
+        }
+
+        // ========================================
+        // LOAD ANNOUNCEMENT LIST
+        // ========================================
+        function loadAnnounceList() {
+            db.ref('announcements').orderByChild('timestamp').limitToLast(10).on('value', function(snap) {
+                const data = snap.val();
+                let html = '';
+
+                if (data) {
+                    const keys = Object.keys(data).reverse();
+                    keys.forEach(function(key) {
+                        const ann = data[key];
+                        html += `
+                            <div class="admin-list-item">
+                                <div>
+                                    <strong>${ann.message}</strong>
+                                    <small>${new Date(ann.timestamp).toLocaleString()}</small>
+                                </div>
+                                <button onclick="deleteAnnouncement('${key}')" class="btn-danger-small">✕ Delete</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<div class="empty-msg">No announcements yet</div>';
+                }
+
+                document.getElementById('announceList').innerHTML = html;
+            });
+        }
+
+        // ========================================
+        // DELETE ANNOUNCEMENT
+        // ========================================
+        function deleteAnnouncement(id) {
+            if (confirm('Delete this announcement?')) {
+                db.ref('announcements/' + id).remove();
+                loadStats();
+            }
+        }
+
+        // ========================================
+        // LOAD SEEN LIST
+        // ========================================
+        function loadSeenList() {
+            db.ref('seen_announcements').orderByChild('timestamp').limitToLast(20).on('value', function(snap) {
+                const data = snap.val();
+                let html = '';
+
+                if (data) {
+                    const keys = Object.keys(data).reverse();
+                    keys.forEach(function(key) {
+                        const seen = data[key];
+                        html += `
+                            <div class="admin-list-item">
+                                <div>
+                                    <strong>👀 ${seen.user_name}</strong>
+                                    <small>Seen announcement #${seen.announcement_id}</small>
+                                </div>
+                                <span class="time">${new Date(seen.timestamp).toLocaleString()}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<div class="empty-msg">No seen logs yet</div>';
+                }
+
+                document.getElementById('seenList').innerHTML = html;
+            });
+        }
+
+        // ========================================
+        // LOAD STATS
+        // ========================================
+        function loadStats() {
+            db.ref('pdfs').on('value', function(snap) {
+                const data = snap.val();
+                document.getElementById('totalMaterials').textContent = data ? Object.keys(data).length : 0;
+            });
+
+            db.ref('announcements').on('value', function(snap) {
+                const data = snap.val();
+                document.getElementById('totalAnnouncements').textContent = data ? Object.keys(data).length : 0;
+            });
+
+            db.ref('seen_announcements').on('value', function(snap) {
+                const data = snap.val();
+                document.getElementById('totalSeen').textContent = data ? Object.keys(data).length : 0;
+            });
+
+            // Maintenance status
+            db.ref('settings/maintenance').on('value', function(snap) {
+                const status = snap.val() === 'on' ? 'ON' : 'OFF';
+                document.getElementById('maintenanceStatus').textContent = 'Current: ' + status;
+                document.getElementById('maintenanceToggle').textContent = status === 'ON' ? 'Turn OFF' : 'Turn ON';
+                document.getElementById('maintenanceToggle').className = status === 'ON' ? 'btn-success' : 'btn-warning';
+            });
+        }
+
+        // ========================================
+        // TOGGLE MAINTENANCE
+        // ========================================
+        function toggleMaintenance() {
+            db.ref('settings/maintenance').once('value', function(snap) {
+                const current = snap.val() === 'on' ? 'off' : 'on';
+                db.ref('settings/maintenance').set(current);
+            });
+        }
+
+        // ========================================
+        // LOGOUT ADMIN
+        // ========================================
+        function logoutAdmin() {
+            sessionStorage.removeItem('admin_logged_in');
+            location.reload();
+        }
+
+        // ========================================
+        // EXPOSE FUNCTIONS
+        // ========================================
+        window.deleteMaterial = deleteMaterial;
+        window.deleteAnnouncement = deleteAnnouncement;
+        window.toggleMaintenance = toggleMaintenance;
+        window.logoutAdmin = logoutAdmin;
+        window.showAdminTab = showAdminTab;
     </script>
 </body>
 </html>

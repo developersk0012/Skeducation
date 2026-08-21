@@ -1,18 +1,19 @@
 // ============================================
 // SK EDUCATION - CONFIGURATION
+// NEW FIREBASE PROJECT: simaji-ff970
 // ============================================
 
 // ============================================
-// 1. FIREBASE CONFIGURATION
+// 1. FIREBASE CONFIGURATION (UPDATED)
 // ============================================
 const firebaseConfig = {
-    apiKey: "AIzaSyAEA_jznrLsOcIJ5jR0qmBQwigStJ4RiAw",
-    authDomain: "my-last-education.firebaseapp.com",
-    databaseURL: "https://my-last-education-default-rtdb.firebaseio.com",
-    projectId: "my-last-education",
-    storageBucket: "my-last-education.firebasestorage.app",
-    messagingSenderId: "916561394351",
-    appId: "1:916561394351:android:06445fc6d1de531e99f25a"
+    apiKey: "AIzaSyAzWlTFo9sIycAKkvV2tDSaMB3HqZXCV0U",
+    authDomain: "simaji-ff970.firebaseapp.com",
+    databaseURL: "https://simaji-ff970-default-rtdb.firebaseio.com",
+    projectId: "simaji-ff970",
+    storageBucket: "simaji-ff970.firebasestorage.app",
+    messagingSenderId: "397843196773",
+    appId: "1:397843196773:android:810280a4289abf84288f8c"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -139,3 +140,4 @@ window.SUBCATEGORIES = SUBCATEGORIES;
 window.ADMIN_EMAIL = ADMIN_EMAIL;
 
 console.log('✅ SK Education Config Loaded!');
+console.log('🔥 Firebase Project: simaji-ff970');
