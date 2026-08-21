@@ -15,6 +15,7 @@ const firebaseConfig = {
     appId: "1:916561394351:android:06445fc6d1de531e99f25a"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -25,20 +26,20 @@ const ADMIN_EMAIL = 'satendrakkushwaha12@gmail.com';
 const WEBSITE_URL = 'https://skeducation.vercel.app/';
 
 // ============================================
-// 3. BATCH DETAILS
+// 3. BATCH DETAILS - FIXED
 // ============================================
 const BATCHES = {
-    1: {
+    '1': {
         name: '🏆 Khazana Batch',
         image: 'https://i.ibb.co/7tJkXSRJ/IMG-20260820-221756-560.jpg',
         description: 'Morning Batch - Complete Study Material'
     },
-    2: {
+    '2': {
         name: '🌟 Disha Online Classes',
         image: 'https://i.ibb.co/pBGDQq8m/1771220242-10th-batch.webp',
         description: 'Evening Batch - Expert Guidance'
     },
-    3: {
+    '3': {
         name: '🎯 Target Board',
         image: 'https://i.ibb.co/KcDw1wwN/IMG-20260820-222646-987.jpg',
         description: 'Weekend Batch - Board Exam Preparation'
@@ -106,13 +107,13 @@ function getUrlParam(name) {
 }
 
 function getCurrentUser() {
-    const userData = localStorage.getItem('sk_user_data');
-    if (userData) {
-        try {
+    try {
+        const userData = localStorage.getItem('sk_user_data');
+        if (userData) {
             return JSON.parse(userData);
-        } catch (e) {
-            return null;
         }
+    } catch (e) {
+        console.error('Error getting user:', e);
     }
     return null;
 }
@@ -122,22 +123,32 @@ function isUserLoggedIn() {
 }
 
 async function generateRollNumber() {
-    const snapshot = await db.ref('users').once('value');
-    const data = snapshot.val();
-    if (data) {
-        return Object.keys(data).length + 1;
+    try {
+        const snapshot = await db.ref('users').once('value');
+        const data = snapshot.val();
+        if (data) {
+            return Object.keys(data).length + 1;
+        }
+        return 1;
+    } catch (e) {
+        console.error('Error generating roll number:', e);
+        return 1;
     }
-    return 1;
 }
 
 function logActivity(userId, action, details) {
-    db.ref('activities').push({
-        roll_no: userId,
-        user_name: getCurrentUser()?.name || 'Unknown',
-        action: action,
-        details: details || '',
-        timestamp: new Date().toISOString()
-    });
+    try {
+        const user = getCurrentUser();
+        db.ref('activities').push({
+            roll_no: userId,
+            user_name: user?.name || 'Unknown',
+            action: action,
+            details: details || '',
+            timestamp: new Date().toISOString()
+        });
+    } catch (e) {
+        console.error('Error logging activity:', e);
+    }
 }
 
 // ============================================
@@ -157,3 +168,5 @@ window.ADMIN_EMAIL = ADMIN_EMAIL;
 window.WEBSITE_URL = WEBSITE_URL;
 
 console.log('✅ SK Education Config Loaded!');
+console.log('📦 BATCHES:', Object.keys(BATCHES));
+console.log('📂 CATEGORIES:', Object.keys(CATEGORIES));

@@ -202,7 +202,6 @@
             font-size: 13px;
         }
 
-        /* Back Link */
         .back-link {
             display: inline-block;
             margin-top: 25px;
@@ -283,7 +282,7 @@
 
         <!-- BATCH BANNER -->
         <div class="batch-banner">
-            <img id="batchImage" src="" alt="Batch">
+            <img id="batchImage" src="" alt="Batch" onerror="this.src='https://via.placeholder.com/800x250/4361ee/white?text=SK+Education'">
             <div class="batch-banner-info">
                 <h1 id="batchName">Batch</h1>
                 <p id="batchDesc">Description</p>
@@ -305,13 +304,11 @@
     // ========================================
     const user = getCurrentUser();
     
-    // Agar user login nahi hai to redirect
     if (!user) {
         window.location.href = 'index.html';
         return;
     }
 
-    // User display
     document.getElementById('userDisplay').textContent = '👋 ' + user.name;
 
     // ========================================
@@ -320,20 +317,23 @@
     const urlParams = new URLSearchParams(window.location.search);
     const batchId = urlParams.get('batch') || '1';
 
-    // Batch details
+    // Batch details - using BATCHES from config.js
     const batch = BATCHES[batchId];
 
     if (!batch) {
-        window.location.href = 'index.html';
-        return;
+        console.error('Batch not found for ID:', batchId);
+        document.getElementById('batchTitle').textContent = 'Batch Not Found';
+        document.getElementById('batchSubtitle').textContent = 'Please go back';
+        document.getElementById('batchName').textContent = 'Error';
+        document.getElementById('batchDesc').textContent = 'Batch not found';
+    } else {
+        // Update header and banner
+        document.getElementById('batchTitle').textContent = batch.name;
+        document.getElementById('batchSubtitle').textContent = 'Select a subject';
+        document.getElementById('batchImage').src = batch.image;
+        document.getElementById('batchName').textContent = batch.name;
+        document.getElementById('batchDesc').textContent = batch.description;
     }
-
-    // Update header and banner
-    document.getElementById('batchTitle').textContent = batch.name;
-    document.getElementById('batchSubtitle').textContent = 'Select a subject';
-    document.getElementById('batchImage').src = batch.image;
-    document.getElementById('batchName').textContent = batch.name;
-    document.getElementById('batchDesc').textContent = batch.description;
 
     // ========================================
     // LOAD CATEGORIES WITH PDF COUNTS
@@ -343,7 +343,7 @@
         grid.innerHTML = '<div class="loading">Loading categories...</div>';
 
         // Get all PDFs for this batch
-        db.ref('pdfs').orderByChild('batch_id').equalTo(parseInt(batchId)).on('value', function(snap) {
+        db.ref('pdfs').orderByChild('batch_id').equalTo(parseInt(batchId)).once('value', function(snap) {
             const data = snap.val();
             const categoryCount = {};
             
@@ -373,7 +373,14 @@
                 hasCategories = true;
             }
 
-            grid.innerHTML = html || '<div style="color:#a5b4fc;text-align:center;padding:40px;">No categories available</div>';
+            grid.innerHTML = html;
+            
+            if (!hasCategories) {
+                grid.innerHTML = '<div style="color:#a5b4fc;text-align:center;padding:40px;">📭 No categories available</div>';
+            }
+        }).catch(function(err) {
+            console.error('Error loading categories:', err);
+            grid.innerHTML = '<div style="color:#f72585;text-align:center;padding:40px;">❌ Error loading categories. Please try again.</div>';
         });
     }
 
