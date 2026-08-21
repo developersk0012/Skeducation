@@ -105,7 +105,6 @@ function getUrlParam(name) {
     return urlParams.get(name);
 }
 
-// Get current user
 function getCurrentUser() {
     const userData = localStorage.getItem('sk_user_data');
     if (userData) {
@@ -118,12 +117,10 @@ function getCurrentUser() {
     return null;
 }
 
-// Check if user is logged in
 function isUserLoggedIn() {
     return getCurrentUser() !== null;
 }
 
-// Generate Roll Number
 async function generateRollNumber() {
     const snapshot = await db.ref('users').once('value');
     const data = snapshot.val();
@@ -133,38 +130,9 @@ async function generateRollNumber() {
     return 1;
 }
 
-// Send Email via EmailJS (or other service)
-function sendLoginEmail(userData) {
-    // Using EmailJS or any email service
-    // For now, we'll use mailto: as fallback
-    const subject = encodeURIComponent('Welcome to SK Education - Login Confirmation');
-    const body = encodeURIComponent(`
-Dear ${userData.name},
-
-You have successfully logged into SK Education!
-
-📅 Login Time: ${new Date().toLocaleString()}
-👤 Name: ${userData.name}
-📧 Email: ${userData.email}
-🎓 Class: Class 10
-🆔 Roll No: ${userData.rollNo}
-
-🌐 Website: ${WEBSITE_URL}
-
-Keep learning and growing!
-
--
-SK Education Team
-    `);
-    
-    // Open email client
-    window.open(`mailto:${userData.email}?subject=${subject}&body=${body}`);
-}
-
-// Log user activity
 function logActivity(userId, action, details) {
     db.ref('activities').push({
-        user_id: userId,
+        roll_no: userId,
         user_name: getCurrentUser()?.name || 'Unknown',
         action: action,
         details: details || '',
@@ -179,7 +147,6 @@ window.db = db;
 window.getCurrentUser = getCurrentUser;
 window.isUserLoggedIn = isUserLoggedIn;
 window.generateRollNumber = generateRollNumber;
-window.sendLoginEmail = sendLoginEmail;
 window.logActivity = logActivity;
 window.getUrlParam = getUrlParam;
 window.BATCHES = BATCHES;

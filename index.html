@@ -8,93 +8,103 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="config.js"></script>
-    <!-- html2canvas and jspdf for PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- Login Screen -->
-        <div id="loginScreen" style="display:none;">
-            <div class="login-container">
-                <div class="logo">📚</div>
-                <h2>Welcome to SK Education</h2>
-                <p>Enter your details to access study materials</p>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>Full Name *</label>
-                        <input type="text" id="loginName" placeholder="Enter your full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Email *</label>
-                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Class</label>
-                        <input type="text" id="loginClass" value="Class 10" readonly style="background:rgba(255,255,255,0.05);">
-                    </div>
-                    <button type="submit">🚀 Continue</button>
-                    <div id="loginError" style="color:#f72585;margin-top:10px;display:none;"></div>
-                </form>
-            </div>
+
+    <!-- ======================================== -->
+    <!-- LOGIN SCREEN -->
+    <!-- ======================================== -->
+    <div id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">📚</div>
+            <h2 class="login-title">Welcome to SK Education</h2>
+            <p class="login-subtitle">Enter your details to access study materials</p>
+            
+            <form id="loginForm">
+                <div class="login-input-group">
+                    <label>👤 Full Name</label>
+                    <input type="text" id="loginName" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="login-input-group">
+                    <label>📧 Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="login-input-group">
+                    <label>🎓 Class</label>
+                    <input type="text" id="loginClass" value="Class 10" readonly>
+                </div>
+                
+                <button type="submit" class="login-btn">🚀 Continue to Study</button>
+                <div id="loginError" class="login-error"></div>
+            </form>
         </div>
+    </div>
 
-        <!-- Main App -->
-        <div id="mainApp" style="display:none;">
-            <div class="main-container">
-                <!-- Header -->
-                <div class="header">
-                    <div class="header-left">
-                        <div class="logo-icon">SK</div>
-                        <div>
-                            <h2>SK Education</h2>
-                            <small>Study Materials</small>
-                        </div>
-                    </div>
-                    <div class="header-right">
-                        <span class="user-badge" id="userDisplay">👋 User</span>
-                        <a href="announcements.html" class="icon-btn" title="Announcements">📢</a>
-                        <button onclick="logout()" class="logout-link">Logout</button>
+    <!-- ======================================== -->
+    <!-- MAIN APP -->
+    <!-- ======================================== -->
+    <div id="mainApp" style="display:none;">
+        <div class="main-container">
+            
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="logo-icon">SK</div>
+                    <div>
+                        <h2>SK Education</h2>
+                        <small>Study Materials</small>
                     </div>
                 </div>
-
-                <!-- Announcements -->
-                <div id="announcementBox"></div>
-
-                <!-- Batches -->
-                <h2 class="section-title">📚 Select Your Batch</h2>
-                <div class="batch-grid" id="batchGrid">
-                    <a href="batch.html?batch=1" class="batch-card">
-                        <img src="https://i.ibb.co/7tJkXSRJ/IMG-20260820-221756-560.jpg" alt="Khazana Batch">
-                        <div class="batch-info">
-                            <h3>🏆 Khazana Batch</h3>
-                            <p>Morning Batch - Complete Study Material</p>
-                            <span class="batch-badge">📚 All Subjects</span>
-                        </div>
-                    </a>
-                    <a href="batch.html?batch=2" class="batch-card">
-                        <img src="https://i.ibb.co/pBGDQq8m/1771220242-10th-batch.webp" alt="Disha Online Classes">
-                        <div class="batch-info">
-                            <h3>🌟 Disha Online Classes</h3>
-                            <p>Evening Batch - Expert Guidance</p>
-                            <span class="batch-badge">📚 All Subjects</span>
-                        </div>
-                    </a>
-                    <a href="batch.html?batch=3" class="batch-card">
-                        <img src="https://i.ibb.co/KcDw1wwN/IMG-20260820-222646-987.jpg" alt="Target Board">
-                        <div class="batch-info">
-                            <h3>🎯 Target Board</h3>
-                            <p>Weekend Batch - Board Exam Preparation</p>
-                            <span class="batch-badge">📚 All Subjects</span>
-                        </div>
-                    </a>
+                <div class="header-right">
+                    <span class="user-badge" id="userDisplay">👋 User</span>
+                    <a href="announcements.html" class="icon-btn">📢</a>
+                    <button onclick="logout()" class="logout-link">Logout</button>
                 </div>
             </div>
+
+            <!-- ANNOUNCEMENTS -->
+            <div id="announcementBox"></div>
+
+            <!-- BATCHES -->
+            <h2 class="section-title">📚 Select Your Batch</h2>
+            <div class="batch-grid">
+                <a href="batch.html?batch=1" class="batch-card">
+                    <img src="https://i.ibb.co/7tJkXSRJ/IMG-20260820-221756-560.jpg" alt="Khazana Batch">
+                    <div class="batch-info">
+                        <h3>🏆 Khazana Batch</h3>
+                        <p>Morning Batch - Complete Study Material</p>
+                        <span class="batch-badge">📚 All Subjects</span>
+                    </div>
+                </a>
+                <a href="batch.html?batch=2" class="batch-card">
+                    <img src="https://i.ibb.co/pBGDQq8m/1771220242-10th-batch.webp" alt="Disha Online Classes">
+                    <div class="batch-info">
+                        <h3>🌟 Disha Online Classes</h3>
+                        <p>Evening Batch - Expert Guidance</p>
+                        <span class="batch-badge">📚 All Subjects</span>
+                    </div>
+                </a>
+                <a href="batch.html?batch=3" class="batch-card">
+                    <img src="https://i.ibb.co/KcDw1wwN/IMG-20260820-222646-987.jpg" alt="Target Board">
+                    <div class="batch-info">
+                        <h3>🎯 Target Board</h3>
+                        <p>Weekend Batch - Board Exam Preparation</p>
+                        <span class="batch-badge">📚 All Subjects</span>
+                    </div>
+                </a>
+            </div>
+            
         </div>
     </div>
 
     <script>
-    // Check if user is logged in
+    // ========================================
+    // CHECK LOGIN STATUS
+    // ========================================
     const user = getCurrentUser();
     
     if (user) {
@@ -107,11 +117,13 @@
         // Log login activity
         logActivity(user.rollNo, 'login', 'User logged in');
     } else {
-        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
     }
 
-    // Login form submit
+    // ========================================
+    // LOGIN FORM
+    // ========================================
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -119,35 +131,37 @@
         const email = document.getElementById('loginEmail').value.trim();
         const errorDiv = document.getElementById('loginError');
         
+        // Reset error
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+        
+        // Validation
         if (!name || !email) {
             errorDiv.style.display = 'block';
-            errorDiv.textContent = 'Please fill all fields!';
+            errorDiv.textContent = '⚠️ Please fill all fields!';
             return;
         }
         
         if (!email.includes('@') || !email.includes('.')) {
             errorDiv.style.display = 'block';
-            errorDiv.textContent = 'Please enter a valid email!';
+            errorDiv.textContent = '⚠️ Please enter a valid email!';
             return;
         }
         
-        errorDiv.style.display = 'none';
-        
         try {
-            // Check if user already exists
+            // Check if user exists
             const snapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
             let userData = null;
             let userId = null;
             let isNewUser = false;
             
             if (snapshot.exists()) {
-                // User exists - login
                 snapshot.forEach(function(child) {
                     userData = child.val();
                     userId = child.key;
                 });
             } else {
-                // New user - create
+                // New user
                 isNewUser = true;
                 const rollNo = await generateRollNumber();
                 userData = {
@@ -174,19 +188,19 @@
             localStorage.setItem('sk_user_data', JSON.stringify(userToSave));
             
             // Log activity
-            await logActivity(userData.rollNo, 'login', `User logged in from ${window.location.hostname}`);
+            await logActivity(userData.rollNo, 'login', `User logged in`);
             
-            // Send email notification to user
+            // Send email to user (silent)
             sendLoginEmail(userData);
             
-            // Send notification to admin email
+            // Send admin notification
             sendAdminNotification(userData, 'login');
             
-            // Generate and download ID card PDF
+            // Generate ID card for new user
             if (isNewUser) {
                 setTimeout(() => {
                     generateIDCard(userData);
-                }, 1000);
+                }, 1500);
             }
             
             // Reload page
@@ -195,15 +209,51 @@
         } catch (err) {
             console.error('Login error:', err);
             errorDiv.style.display = 'block';
-            errorDiv.textContent = 'Something went wrong. Please try again.';
+            errorDiv.textContent = '❌ Something went wrong. Please try again.';
         }
     });
 
-    // Send admin notification
+    // ========================================
+    // SEND EMAIL TO USER (SILENT)
+    // ========================================
+    function sendLoginEmail(userData) {
+        // Using mailto: silently (opens email client)
+        const subject = encodeURIComponent('Welcome to SK Education - Login Confirmation');
+        const body = encodeURIComponent(`
+Dear ${userData.name},
+
+✅ You have successfully logged into SK Education!
+
+📅 Login Time: ${new Date().toLocaleString()}
+👤 Name: ${userData.name}
+📧 Email: ${userData.email}
+🎓 Class: Class 10
+🆔 Roll No: ${userData.rollNo}
+
+🌐 Website: https://skeducation.vercel.app/
+
+Keep learning and growing!
+
+Best Regards,
+SK Education Team
+        `);
+        
+        // Open email client silently
+        const mailtoLink = document.createElement('a');
+        mailtoLink.href = `mailto:${userData.email}?subject=${subject}&body=${body}`;
+        mailtoLink.style.display = 'none';
+        document.body.appendChild(mailtoLink);
+        mailtoLink.click();
+        document.body.removeChild(mailtoLink);
+    }
+
+    // ========================================
+    // SEND ADMIN NOTIFICATION
+    // ========================================
     function sendAdminNotification(userData, action) {
         const subject = encodeURIComponent(`🔔 User ${action}: ${userData.name}`);
         const body = encodeURIComponent(`
-User Activity Notification
+📌 User Activity Notification
 
 👤 Name: ${userData.name}
 📧 Email: ${userData.email}
@@ -216,23 +266,29 @@ User Activity Notification
 SK Education Admin Panel
         `);
         
-        // Open email client with admin email
-        window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`);
+        // Open admin email client
+        const mailtoLink = document.createElement('a');
+        mailtoLink.href = `mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`;
+        mailtoLink.style.display = 'none';
+        document.body.appendChild(mailtoLink);
+        mailtoLink.click();
+        document.body.removeChild(mailtoLink);
     }
 
-    // Generate ID Card PDF
+    // ========================================
+    // GENERATE ID CARD PDF
+    // ========================================
     function generateIDCard(userData) {
-        // Create ID card HTML
         const idCardHTML = `
-            <div id="idCard" style="width:400px;padding:20px;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);border-radius:15px;border:2px solid #4361ee;font-family:Arial;color:white;text-align:center;">
+            <div id="idCard" style="width:400px;padding:25px;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);border-radius:16px;border:2px solid #4361ee;font-family:Arial;color:white;text-align:center;">
                 <div style="border-bottom:2px solid #4361ee;padding-bottom:15px;margin-bottom:15px;">
                     <div style="font-size:28px;font-weight:900;background:linear-gradient(90deg,#4cc9f0,#f72585);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SK Education</div>
                     <div style="font-size:12px;color:#a5b4fc;">Student ID Card</div>
                 </div>
-                <div style="font-size:60px;margin:10px 0;">📚</div>
-                <div style="font-size:18px;font-weight:bold;margin:5px 0;">${userData.name}</div>
+                <div style="font-size:50px;margin:10px 0;">📚</div>
+                <div style="font-size:20px;font-weight:bold;margin:5px 0;">${userData.name}</div>
                 <div style="font-size:14px;color:#a5b4fc;">${userData.email}</div>
-                <div style="margin:10px 0;padding:8px;background:rgba(67,97,238,0.2);border-radius:8px;">
+                <div style="margin:12px 0;padding:10px;background:rgba(67,97,238,0.2);border-radius:10px;">
                     <div>🎓 ${userData.class || 'Class 10'}</div>
                     <div>🆔 Roll No: ${userData.rollNo}</div>
                 </div>
@@ -242,7 +298,6 @@ SK Education Admin Panel
             </div>
         `;
         
-        // Create temporary div
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = idCardHTML;
         tempDiv.style.position = 'fixed';
@@ -252,7 +307,6 @@ SK Education Admin Panel
         
         const idCardElement = tempDiv.querySelector('#idCard');
         
-        // Generate PDF
         html2canvas(idCardElement, {
             scale: 2,
             backgroundColor: '#0c0c2e'
@@ -264,8 +318,6 @@ SK Education Admin Panel
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`SK_Education_ID_${userData.name}.pdf`);
-            
-            // Clean up
             document.body.removeChild(tempDiv);
         }).catch(err => {
             console.error('PDF generation error:', err);
@@ -273,7 +325,9 @@ SK Education Admin Panel
         });
     }
 
-    // Load announcements
+    // ========================================
+    // LOAD ANNOUNCEMENTS
+    // ========================================
     function loadAnnouncements() {
         db.ref('announcements').orderByChild('timestamp').limitToLast(3).on('value', function(snap) {
             const data = snap.val();
@@ -303,15 +357,15 @@ SK Education Admin Panel
         });
     }
 
-    // Mark as seen with activity log
+    // ========================================
+    // MARK AS SEEN
+    // ========================================
     function markAsSeen(id) {
         const user = getCurrentUser();
         if (!user) return;
         
-        // Log activity
         logActivity(user.rollNo, 'seen', `Marked announcement #${id} as seen`);
         
-        // Save seen status
         db.ref('seen_announcements').push({
             announcement_id: id,
             user_name: user.name,
@@ -320,22 +374,20 @@ SK Education Admin Panel
             timestamp: new Date().toISOString()
         });
         
-        // Admin notification
         sendAdminNotification(user, 'seen_announcement');
-        
         document.getElementById('ann-' + id).style.opacity = '0.5';
         alert('✅ Marked as seen!');
     }
 
-    // Like announcement with activity log
+    // ========================================
+    // LIKE ANNOUNCEMENT
+    // ========================================
     function likeAnnouncement(id) {
         const user = getCurrentUser();
         if (!user) return;
         
-        // Log activity
         logActivity(user.rollNo, 'like', `Liked announcement #${id}`);
         
-        // Save like
         db.ref('likes').push({
             announcement_id: id,
             user_name: user.name,
@@ -344,13 +396,13 @@ SK Education Admin Panel
             timestamp: new Date().toISOString()
         });
         
-        // Admin notification
         sendAdminNotification(user, 'liked_announcement');
-        
         alert('❤️ Liked!');
     }
 
-    // Check maintenance
+    // ========================================
+    // CHECK MAINTENANCE
+    // ========================================
     function checkMaintenance() {
         db.ref('settings/maintenance').on('value', function(snap) {
             if (snap.val() === 'on') {
@@ -368,7 +420,9 @@ SK Education Admin Panel
         });
     }
 
-    // Logout
+    // ========================================
+    // LOGOUT
+    // ========================================
     function logout() {
         const user = getCurrentUser();
         if (user) {
@@ -378,12 +432,15 @@ SK Education Admin Panel
         location.reload();
     }
 
-    // Expose functions globally
+    // ========================================
+    // EXPOSE FUNCTIONS
+    // ========================================
     window.markAsSeen = markAsSeen;
     window.likeAnnouncement = likeAnnouncement;
     window.logout = logout;
     window.generateIDCard = generateIDCard;
     window.sendAdminNotification = sendAdminNotification;
+    window.sendLoginEmail = sendLoginEmail;
     </script>
 </body>
 </html>
