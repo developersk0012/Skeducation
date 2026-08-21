@@ -3,446 +3,1046 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SK Education</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Admin Panel - SK Education</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="config.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 50%, #2d1b69 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        /* ========================================
+           ADMIN LOGIN
+           ======================================== */
+        .admin-login {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 45px 35px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .admin-login .lock-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .admin-login h2 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .admin-login p {
+            color: #a5b4fc;
+            font-size: 15px;
+            margin-bottom: 25px;
+        }
+
+        .admin-login input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-login input:focus {
+            outline: none;
+            border-color: #4361ee;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .admin-login button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #4361ee, #f72585);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-login button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(67, 97, 238, 0.35);
+        }
+
+        .admin-login .error {
+            color: #f72585;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* ========================================
+           ADMIN PANEL
+           ======================================== */
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 25px 40px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 25px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-header-left .logo-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4361ee, #f72585);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .admin-header-left h2 {
+            font-size: 22px;
+            color: white;
+            margin: 0;
+        }
+
+        .admin-header-left small {
+            color: #a5b4fc;
+            font-size: 13px;
+            display: block;
+        }
+
+        .admin-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .user-count-badge {
+            background: rgba(76, 201, 240, 0.15);
+            color: #4cc9f0;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 14px;
+            border: 1px solid rgba(76, 201, 240, 0.15);
+        }
+
+        .logout-btn {
+            padding: 10px 22px;
+            background: rgba(247, 37, 133, 0.15);
+            color: #f72585;
+            border: 1px solid rgba(247, 37, 133, 0.15);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(247, 37, 133, 0.3);
+        }
+
+        /* Stats */
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .admin-stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(8px);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .admin-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .admin-stat-label {
+            color: #a5b4fc;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .admin-tab {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: #a5b4fc;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(90deg, #4361ee, #f72585);
+            color: white;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .admin-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Cards */
+        .admin-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 25px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 20px;
+        }
+
+        .admin-card h3 {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 12px;
+        }
+
+        .admin-card .form-group {
+            margin-bottom: 16px;
+        }
+
+        .admin-card label {
+            display: block;
+            color: #a5b4fc;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .admin-card input,
+        .admin-card select,
+        .admin-card textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-card input:focus,
+        .admin-card select:focus,
+        .admin-card textarea:focus {
+            outline: none;
+            border-color: #4361ee;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .admin-card input::placeholder,
+        .admin-card textarea::placeholder {
+            color: #4a5a7a;
+        }
+
+        .admin-card select option {
+            background: #1a1a3e;
+        }
+
+        .btn-primary {
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #4361ee, #f72585);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-danger-small {
+            background: rgba(247, 37, 133, 0.15);
+            color: #f72585;
+            border: 1px solid rgba(247, 37, 133, 0.15);
+            padding: 4px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .btn-danger-small:hover {
+            background: rgba(247, 37, 133, 0.3);
+        }
+
+        .btn-warning {
+            padding: 10px 25px;
+            background: #ffc107;
+            color: #1a1a3e;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-warning:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-success {
+            padding: 10px 25px;
+            background: #4cc9f0;
+            color: #1a1a3e;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-success:hover {
+            transform: scale(1.02);
+        }
+
+        /* Lists */
+        .admin-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: white;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-list-item strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .admin-list-item small {
+            color: #6a7a9e;
+            font-size: 13px;
+        }
+
+        .admin-list-item .time {
+            color: #6a7a9e;
+            font-size: 12px;
+        }
+
+        /* User Folders */
+        .user-folder {
+            background: rgba(67, 97, 238, 0.08);
+            border-radius: 12px;
+            padding: 15px 18px;
+            margin-bottom: 10px;
+            border-left: 3px solid #4361ee;
+            transition: all 0.3s ease;
+        }
+
+        .user-folder:hover {
+            background: rgba(67, 97, 238, 0.15);
+        }
+
+        .user-folder .folder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-folder .folder-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .user-folder .folder-detail {
+            font-size: 12px;
+            color: #a5b4fc;
+        }
+
+        .user-folder .status-badge {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .user-folder .folder-date {
+            font-size: 12px;
+            color: #6a7a9e;
+            margin-top: 5px;
+        }
+
+        /* Settings */
+        .setting-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item h4 {
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .setting-item p {
+            color: #a5b4fc;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .admin-tab-content {
+            display: none;
+        }
+
+        .admin-tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-msg {
+            color: #4cc9f0;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .empty-msg {
+            color: #6a7a9e;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 15px;
+            }
+
+            .admin-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-tabs {
+                flex-direction: column;
+                background: transparent;
+                border: none;
+                padding: 0;
+            }
+
+            .admin-tab {
+                text-align: center;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .admin-card {
+                padding: 18px;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .admin-header-left {
+                justify-content: center;
+            }
+
+            .admin-header-right {
+                justify-content: center;
+            }
+
+            .admin-login {
+                margin: 40px 15px;
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-stat-value {
+                font-size: 24px;
+            }
+
+            .admin-tab {
+                font-size: 13px;
+                padding: 8px 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-    <!-- ======================================== -->
-    <!-- LOGIN SCREEN -->
-    <!-- ======================================== -->
-    <div id="loginScreen">
-        <div class="login-container">
-            <div class="login-logo">📚</div>
-            <h2 class="login-title">Welcome to SK Education</h2>
-            <p class="login-subtitle">Enter your details to access study materials</p>
-            
-            <form id="loginForm">
-                <div class="login-input-group">
-                    <label>👤 Full Name</label>
-                    <input type="text" id="loginName" placeholder="Enter your full name" required>
-                </div>
-                
-                <div class="login-input-group">
-                    <label>📧 Email Address</label>
-                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
-                </div>
-                
-                <div class="login-input-group">
-                    <label>🎓 Class</label>
-                    <input type="text" id="loginClass" value="Class 10" readonly>
-                </div>
-                
-                <button type="submit" class="login-btn">🚀 Continue to Study</button>
-                <div id="loginError" class="login-error"></div>
-            </form>
+    <div id="app">
+        <!-- ======================================== -->
+        <!-- ADMIN LOGIN -->
+        <!-- ======================================== -->
+        <div id="loginScreen" style="display:none;">
+            <div class="admin-login">
+                <div class="lock-icon">🔐</div>
+                <h2>Admin Login</h2>
+                <p>Enter admin password to continue</p>
+                <form id="adminLoginForm">
+                    <input type="password" id="adminPassword" placeholder="Enter password" required>
+                    <button type="submit">Login</button>
+                    <div id="loginError" class="error">Invalid password!</div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <!-- ======================================== -->
-    <!-- MAIN APP -->
-    <!-- ======================================== -->
-    <div id="mainApp" style="display:none;">
-        <div class="main-container">
-            
-            <!-- HEADER -->
-            <div class="header">
-                <div class="header-left">
-                    <div class="logo-icon">SK</div>
-                    <div>
-                        <h2>SK Education</h2>
-                        <small>Study Materials</small>
+        <!-- ======================================== -->
+        <!-- ADMIN PANEL -->
+        <!-- ======================================== -->
+        <div id="adminPanel" style="display:none;">
+            <div class="admin-container">
+                <!-- Header -->
+                <div class="admin-header">
+                    <div class="admin-header-left">
+                        <div class="logo-icon">SK</div>
+                        <div>
+                            <h2>🔐 Admin Panel</h2>
+                            <small>Real-time user activity dashboard</small>
+                        </div>
+                    </div>
+                    <div class="admin-header-right">
+                        <span class="user-count-badge" id="userCount">👥 Users: 0</span>
+                        <button onclick="logoutAdmin()" class="logout-btn">Logout</button>
                     </div>
                 </div>
-                <div class="header-right">
-                    <span class="user-badge" id="userDisplay">👋 User</span>
-                    <a href="announcements.html" class="icon-btn" onclick="return true;">📢</a>
-                    <button onclick="logout()" class="logout-link">Logout</button>
+
+                <!-- Stats -->
+                <div class="admin-stats">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-value" id="totalUsers">0</div>
+                        <div class="admin-stat-label">Total Users</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-value" id="totalActivities">0</div>
+                        <div class="admin-stat-label">Total Activities</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-value" id="totalLikes">0</div>
+                        <div class="admin-stat-label">Total Likes</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="showAdminTab('users', this)">👥 Users</button>
+                    <button class="admin-tab" onclick="showAdminTab('activities', this)">📊 Activities</button>
+                    <button class="admin-tab" onclick="showAdminTab('add', this)">➕ Add Material</button>
+                    <button class="admin-tab" onclick="showAdminTab('announce', this)">📢 Announce</button>
+                    <button class="admin-tab" onclick="showAdminTab('settings', this)">⚙️ Settings</button>
+                </div>
+
+                <!-- Tab: Users -->
+                <div id="tab-users" class="admin-tab-content active">
+                    <div class="admin-card">
+                        <h3>👥 All Users</h3>
+                        <div id="usersList"><div class="empty-msg">Loading...</div></div>
+                    </div>
+                    <div class="admin-card">
+                        <h3>📁 User Folders</h3>
+                        <div id="userFolders"><div class="empty-msg">Loading...</div></div>
+                    </div>
+                </div>
+
+                <!-- Tab: Activities -->
+                <div id="tab-activities" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>📊 Recent Activities</h3>
+                        <div id="activitiesList"><div class="empty-msg">Loading...</div></div>
+                    </div>
+                </div>
+
+                <!-- Tab: Add Material -->
+                <div id="tab-add" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>📤 Upload Study Material</h3>
+                        <form id="addMaterialForm">
+                            <div class="form-group">
+                                <label>Batch *</label>
+                                <select id="matBatch" required>
+                                    <option value="">Select Batch</option>
+                                    <option value="1">🏆 Khazana Batch</option>
+                                    <option value="2">🌟 Disha Online Classes</option>
+                                    <option value="3">🎯 Target Board</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select id="matCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="science">🔬 Science</option>
+                                    <option value="math">📐 Mathematics</option>
+                                    <option value="hindi">📝 Hindi</option>
+                                    <option value="sanskrit">🕉️ Sanskrit</option>
+                                    <option value="sst">🌍 Social Studies</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Subcategory</label>
+                                <select id="matSubcategory">
+                                    <option value="">Select Subcategory</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Material Type *</label>
+                                <select id="matType" required>
+                                    <option value="pdf">📄 PDF</option>
+                                    <option value="video">🎥 Video</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" id="matTitle" placeholder="Enter title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="matDesc" rows="2" placeholder="Brief description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label id="fileUrlLabel">File URL *</label>
+                                <input type="url" id="matFileUrl" placeholder="https://example.com/file.pdf" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Thumbnail URL (for videos)</label>
+                                <input type="url" id="matThumbnail" placeholder="https://example.com/thumbnail.jpg">
+                            </div>
+                            <button type="submit" class="btn-primary">➕ Add Material</button>
+                            <div id="addSuccess" class="success-msg">✅ Material added successfully!</div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tab: Announcements -->
+                <div id="tab-announce" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>📢 Send Announcement</h3>
+                        <form id="announceForm">
+                            <div class="form-group">
+                                <label>Message *</label>
+                                <textarea id="announceMsg" rows="4" placeholder="Type your announcement here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">📤 Send to All Users</button>
+                            <div id="announceSuccess" class="success-msg">✅ Announcement sent successfully!</div>
+                        </form>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3>📋 Recent Announcements</h3>
+                        <div id="announceList"><div class="empty-msg">Loading...</div></div>
+                    </div>
+                </div>
+
+                <!-- Tab: Settings -->
+                <div id="tab-settings" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3>⚙️ Settings</h3>
+                        
+                        <div class="setting-item">
+                            <h4>🔧 Maintenance Mode</h4>
+                            <p>When enabled, users will see a maintenance page</p>
+                            <button id="maintenanceToggle" class="btn-warning" onclick="toggleMaintenance()">Turn ON</button>
+                            <div id="maintenanceStatus" style="margin-top:10px;color:#a5b4fc;">Current: OFF</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <!-- ANNOUNCEMENTS -->
-            <div id="announcementBox"></div>
-
-            <!-- BATCHES -->
-            <h2 class="section-title">📚 Select Your Batch</h2>
-            <div class="batch-grid">
-                <a href="batch.html?batch=1" class="batch-card">
-                    <img src="https://i.ibb.co/7tJkXSRJ/IMG-20260820-221756-560.jpg" alt="Khazana Batch">
-                    <div class="batch-info">
-                        <h3>🏆 Khazana Batch</h3>
-                        <p>Morning Batch - Complete Study Material</p>
-                        <span class="batch-badge">📚 All Subjects</span>
-                    </div>
-                </a>
-                <a href="batch.html?batch=2" class="batch-card">
-                    <img src="https://i.ibb.co/pBGDQq8m/1771220242-10th-batch.webp" alt="Disha Online Classes">
-                    <div class="batch-info">
-                        <h3>🌟 Disha Online Classes</h3>
-                        <p>Evening Batch - Expert Guidance</p>
-                        <span class="batch-badge">📚 All Subjects</span>
-                    </div>
-                </a>
-                <a href="batch.html?batch=3" class="batch-card">
-                    <img src="https://i.ibb.co/KcDw1wwN/IMG-20260820-222646-987.jpg" alt="Target Board">
-                    <div class="batch-info">
-                        <h3>🎯 Target Board</h3>
-                        <p>Weekend Batch - Board Exam Preparation</p>
-                        <span class="batch-badge">📚 All Subjects</span>
-                    </div>
-                </a>
-            </div>
-            
         </div>
     </div>
 
     <script>
     // ========================================
-    // CHECK LOGIN STATUS
+    // CHECK ADMIN LOGIN
     // ========================================
-    const user = getCurrentUser();
-    let emailSent = false;
+    const adminLoggedIn = sessionStorage.getItem('admin_logged_in');
     
-    if (user) {
+    if (adminLoggedIn === 'true') {
         document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
-        document.getElementById('userDisplay').textContent = '👋 ' + user.name;
-        document.getElementById('userDisplay').title = 'Roll No: ' + user.rollNo;
-        loadAnnouncements();
-        checkMaintenance();
-        // Log login activity
-        logActivity(user.rollNo, 'login', 'User logged in');
+        document.getElementById('adminPanel').style.display = 'block';
+        loadAdminData();
     } else {
-        document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('adminPanel').style.display = 'none';
     }
 
     // ========================================
-    // LOGIN FORM
+    // ADMIN LOGIN
     // ========================================
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const password = document.getElementById('adminPassword').value;
         
-        const name = document.getElementById('loginName').value.trim();
-        const email = document.getElementById('loginEmail').value.trim();
-        const errorDiv = document.getElementById('loginError');
-        
-        // Reset error
-        errorDiv.style.display = 'none';
-        errorDiv.textContent = '';
-        
-        // Validation
-        if (!name || !email) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = '⚠️ Please fill all fields!';
-            return;
-        }
-        
-        if (!email.includes('@') || !email.includes('.')) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = '⚠️ Please enter a valid email!';
-            return;
-        }
-        
-        try {
-            // Check if user exists
-            const snapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
-            let userData = null;
-            let userId = null;
-            let isNewUser = false;
-            
-            if (snapshot.exists()) {
-                snapshot.forEach(function(child) {
-                    userData = child.val();
-                    userId = child.key;
-                });
-            } else {
-                // New user
-                isNewUser = true;
-                const rollNo = await generateRollNumber();
-                userData = {
-                    name: name,
-                    email: email,
-                    class: 'Class 10',
-                    rollNo: rollNo,
-                    createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString()
-                };
-                const newUserRef = await db.ref('users').push(userData);
-                userId = newUserRef.key;
-            }
-            
-            // Save to localStorage
-            const userToSave = {
-                id: userId,
-                name: userData.name,
-                email: userData.email,
-                class: userData.class || 'Class 10',
-                rollNo: userData.rollNo,
-                isNew: isNewUser
-            };
-            localStorage.setItem('sk_user_data', JSON.stringify(userToSave));
-            
-            // Log activity
-            await logActivity(userData.rollNo, 'login', 'User logged in');
-            
-            // 🔴 SEND EMAIL ONLY ON LOGIN (SILENT)
-            sendLoginEmail(userData);
-            
-            // 🔴 SEND ADMIN NOTIFICATION ONLY ON LOGIN
-            sendAdminNotification(userData, 'login');
-            
-            // Generate ID card for new user
-            if (isNewUser) {
-                setTimeout(() => {
-                    generateIDCard(userData);
-                }, 1500);
-            }
-            
-            // Reload page
+        if (password === 'saten@12345') {
+            sessionStorage.setItem('admin_logged_in', 'true');
             location.reload();
-            
-        } catch (err) {
-            console.error('Login error:', err);
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = '❌ Something went wrong. Please try again.';
+        } else {
+            document.getElementById('loginError').style.display = 'block';
         }
     });
 
     // ========================================
-    // SEND EMAIL TO USER (SILENT - ONLY LOGIN)
+    // TAB SWITCHING
     // ========================================
-    function sendLoginEmail(userData) {
-        const subject = encodeURIComponent('Welcome to SK Education - Login Confirmation');
-        const body = encodeURIComponent(`
-Dear ${userData.name},
-
-✅ You have successfully logged into SK Education!
-
-📅 Login Time: ${new Date().toLocaleString()}
-👤 Name: ${userData.name}
-📧 Email: ${userData.email}
-🎓 Class: Class 10
-🆔 Roll No: ${userData.rollNo}
-
-🌐 Website: https://skeducation.vercel.app/
-
-Keep learning and growing!
-
-Best Regards,
-SK Education Team
-        `);
+    function showAdminTab(tab, el) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
         
-        // Open email client silently
-        const mailtoLink = document.createElement('a');
-        mailtoLink.href = `mailto:${userData.email}?subject=${subject}&body=${body}`;
-        mailtoLink.style.display = 'none';
-        document.body.appendChild(mailtoLink);
-        mailtoLink.click();
-        setTimeout(() => {
-            document.body.removeChild(mailtoLink);
-        }, 100);
+        document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
     }
 
     // ========================================
-    // SEND ADMIN NOTIFICATION (ONLY LOGIN)
+    // SUBCATEGORY DROPDOWN
     // ========================================
-    function sendAdminNotification(userData, action) {
-        const subject = encodeURIComponent(`🔔 User ${action}: ${userData.name}`);
-        const body = encodeURIComponent(`
-📌 User Activity Notification
-
-👤 Name: ${userData.name}
-📧 Email: ${userData.email}
-🆔 Roll No: ${userData.rollNo}
-📅 Time: ${new Date().toLocaleString()}
-🎯 Action: ${action}
-🌐 IP: ${window.location.hostname}
-
----
-SK Education Admin Panel
-        `);
+    document.getElementById('matCategory').addEventListener('change', function() {
+        const cat = this.value;
+        const subSelect = document.getElementById('matSubcategory');
+        subSelect.innerHTML = '<option value="">Select Subcategory</option>';
         
-        // Open admin email client silently
-        const mailtoLink = document.createElement('a');
-        mailtoLink.href = `mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`;
-        mailtoLink.style.display = 'none';
-        document.body.appendChild(mailtoLink);
-        mailtoLink.click();
-        setTimeout(() => {
-            document.body.removeChild(mailtoLink);
-        }, 100);
+        if (cat && SUBCATEGORIES[cat]) {
+            for (let [key, name] of Object.entries(SUBCATEGORIES[cat])) {
+                subSelect.innerHTML += `<option value="${key}">${name}</option>`;
+            }
+        }
+    });
+
+    // ========================================
+    // ADD MATERIAL
+    // ========================================
+    document.getElementById('addMaterialForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const batch_id = document.getElementById('matBatch').value;
+        const category_id = document.getElementById('matCategory').value;
+        const subcategory_id = document.getElementById('matSubcategory').value;
+        const type = document.getElementById('matType').value;
+        const title = document.getElementById('matTitle').value;
+        const description = document.getElementById('matDesc').value;
+        const file_path = document.getElementById('matFileUrl').value;
+        const thumbnail = document.getElementById('matThumbnail').value;
+        
+        if (!batch_id || !category_id || !title || !file_path) {
+            alert('Please fill all required fields!');
+            return;
+        }
+        
+        const data = {
+            batch_id: parseInt(batch_id),
+            category_id: category_id,
+            subcategory_id: subcategory_id || '',
+            type: type,
+            title: title,
+            description: description || '',
+            file_path: file_path,
+            thumbnail: thumbnail || '',
+            timestamp: new Date().toISOString()
+        };
+        
+        db.ref('pdfs').push(data).then(() => {
+            document.getElementById('addSuccess').style.display = 'block';
+            setTimeout(() => document.getElementById('addSuccess').style.display = 'none', 3000);
+            this.reset();
+        });
+    });
+
+    // ========================================
+    // SEND ANNOUNCEMENT
+    // ========================================
+    document.getElementById('announceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = document.getElementById('announceMsg').value;
+        
+        if (!message) {
+            alert('Please enter a message!');
+            return;
+        }
+        
+        const data = {
+            message: message,
+            timestamp: new Date().toISOString()
+        };
+        
+        db.ref('announcements').push(data).then(() => {
+            document.getElementById('announceSuccess').style.display = 'block';
+            setTimeout(() => document.getElementById('announceSuccess').style.display = 'none', 3000);
+            document.getElementById('announceMsg').value = '';
+            loadAnnounceList();
+        });
+    });
+
+    // ========================================
+    // LOAD ADMIN DATA
+    // ========================================
+    function loadAdminData() {
+        loadUsers();
+        loadActivities();
+        loadAnnounceList();
+        loadStats();
+        loadUserFolders();
     }
 
     // ========================================
-    // GENERATE ID CARD PDF
+    // LOAD USERS
     // ========================================
-    function generateIDCard(userData) {
-        const idCardHTML = `
-            <div id="idCard" style="width:400px;padding:25px;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);border-radius:16px;border:2px solid #4361ee;font-family:Arial;color:white;text-align:center;">
-                <div style="border-bottom:2px solid #4361ee;padding-bottom:15px;margin-bottom:15px;">
-                    <div style="font-size:28px;font-weight:900;background:linear-gradient(90deg,#4cc9f0,#f72585);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SK Education</div>
-                    <div style="font-size:12px;color:#a5b4fc;">Student ID Card</div>
-                </div>
-                <div style="font-size:50px;margin:10px 0;">📚</div>
-                <div style="font-size:20px;font-weight:bold;margin:5px 0;">${userData.name}</div>
-                <div style="font-size:14px;color:#a5b4fc;">${userData.email}</div>
-                <div style="margin:12px 0;padding:10px;background:rgba(67,97,238,0.2);border-radius:10px;">
-                    <div>🎓 ${userData.class || 'Class 10'}</div>
-                    <div>🆔 Roll No: ${userData.rollNo}</div>
-                </div>
-                <div style="border-top:2px solid #4361ee;padding-top:10px;margin-top:10px;font-size:10px;color:#6a7a9e;">
-                    Valid until: ${new Date().toISOString().split('T')[0]}
-                </div>
-            </div>
-        `;
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = idCardHTML;
-        tempDiv.style.position = 'fixed';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.top = '0';
-        document.body.appendChild(tempDiv);
-        
-        const idCardElement = tempDiv.querySelector('#idCard');
-        
-        html2canvas(idCardElement, {
-            scale: 2,
-            backgroundColor: '#0c0c2e'
-        }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a6');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`SK_Education_ID_${userData.name}.pdf`);
-            document.body.removeChild(tempDiv);
-        }).catch(err => {
-            console.error('PDF generation error:', err);
-            document.body.removeChild(tempDiv);
+    function loadUsers() {
+        db.ref('users').on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
+            let count = 0;
+            
+            if (data) {
+                const keys = Object.keys(data);
+                count = keys.length;
+                keys.forEach(function(key) {
+                    const user = data[key];
+                    html += `
+                        <div class="admin-list-item">
+                            <div>
+                                <strong>${user.name}</strong>
+                                <small>📧 ${user.email} • 🆔 Roll ${user.rollNo}</small>
+                            </div>
+                            <span class="time">${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('usersList').innerHTML = html || '<div class="empty-msg">No users registered</div>';
+            document.getElementById('totalUsers').textContent = count;
+            document.getElementById('userCount').textContent = `👥 Users: ${count}`;
         });
     }
 
     // ========================================
-    // LOAD ANNOUNCEMENTS
+    // LOAD USER FOLDERS
     // ========================================
-    function loadAnnouncements() {
-        db.ref('announcements').orderByChild('timestamp').limitToLast(3).on('value', function(snap) {
+    function loadUserFolders() {
+        db.ref('users').on('value', function(snap) {
             const data = snap.val();
-            const box = document.getElementById('announcementBox');
-            box.innerHTML = '';
+            let html = '';
+            
+            if (data) {
+                const keys = Object.keys(data);
+                keys.forEach(function(key) {
+                    const user = data[key];
+                    html += `
+                        <div class="user-folder">
+                            <div class="folder-header">
+                                <div>
+                                    <div class="folder-name">📁 ${user.name}</div>
+                                    <div class="folder-detail">Roll No: ${user.rollNo} • ${user.email}</div>
+                                </div>
+                                <div>
+                                    <span class="status-badge">${user.lastLogin ? '🟢 Online' : '⚪ Offline'}</span>
+                                </div>
+                            </div>
+                            <div class="folder-date">📅 Joined: ${user.createdAt ? new Date(user.createdAt).toLocaleString() : 'N/A'}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('userFolders').innerHTML = html || '<div class="empty-msg">No users</div>';
+        });
+    }
+
+    // ========================================
+    // LOAD ACTIVITIES
+    // ========================================
+    function loadActivities() {
+        db.ref('activities').orderByChild('timestamp').limitToLast(50).on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
+            let count = 0;
+            let likes = 0;
+            
+            if (data) {
+                const keys = Object.keys(data).reverse();
+                count = keys.length;
+                keys.forEach(function(key) {
+                    const activity = data[key];
+                    const icon = activity.action === 'login' ? '🟢' : 
+                                activity.action === 'seen' ? '👀' : 
+                                activity.action === 'like' ? '❤️' : '📌';
+                    
+                    if (activity.action === 'like') likes++;
+                    
+                    html += `
+                        <div class="admin-list-item">
+                            <div>
+                                <strong>${icon} ${activity.user_name}</strong>
+                                <small>${activity.action} ${activity.details || ''}</small>
+                            </div>
+                            <span class="time">${activity.timestamp ? new Date(activity.timestamp).toLocaleString() : ''}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('activitiesList').innerHTML = html || '<div class="empty-msg">No activities yet</div>';
+            document.getElementById('totalActivities').textContent = count;
+            document.getElementById('totalLikes').textContent = likes;
+        });
+    }
+
+    // ========================================
+    // LOAD ANNOUNCEMENTS LIST
+    // ========================================
+    function loadAnnounceList() {
+        db.ref('announcements').orderByChild('timestamp').limitToLast(10).on('value', function(snap) {
+            const data = snap.val();
+            let html = '';
             
             if (data) {
                 const keys = Object.keys(data).reverse();
                 keys.forEach(function(key) {
                     const ann = data[key];
-                    box.innerHTML += `
-                        <div class="announcement-box" id="ann-${key}">
-                            <div class="msg">
-                                <strong>📢 Announcement</strong>
-                                <div>${ann.message}</div>
+                    html += `
+                        <div class="admin-list-item">
+                            <div>
+                                <strong>${ann.message}</strong>
                                 <small>${new Date(ann.timestamp).toLocaleString()}</small>
                             </div>
-                            <div class="ann-actions">
-                                <button class="seen-btn" onclick="markAsSeen('${key}')">✓ Seen</button>
-                                <button class="like-btn" onclick="likeAnnouncement('${key}')">❤️ Like</button>
-                                <a href="mailto:${ADMIN_EMAIL}?subject=Reply to Announcement" class="reply-btn" onclick="event.stopPropagation();">✉ Reply</a>
-                            </div>
+                            <button onclick="deleteAnnouncement('${key}')" class="btn-danger-small">✕ Delete</button>
                         </div>
                     `;
                 });
+            } else {
+                html = '<div class="empty-msg">No announcements yet</div>';
             }
+            
+            document.getElementById('announceList').innerHTML = html;
         });
     }
 
     // ========================================
-    // MARK AS SEEN (NO EMAIL)
+    // DELETE ANNOUNCEMENT
     // ========================================
-    function markAsSeen(id) {
-        const user = getCurrentUser();
-        if (!user) return;
-        
-        logActivity(user.rollNo, 'seen', `Marked announcement #${id} as seen`);
-        
-        db.ref('seen_announcements').push({
-            announcement_id: id,
-            user_name: user.name,
-            user_email: user.email,
-            roll_no: user.rollNo,
-            timestamp: new Date().toISOString()
-        });
-        
-        document.getElementById('ann-' + id).style.opacity = '0.5';
-        alert('✅ Marked as seen!');
-    }
-
-    // ========================================
-    // LIKE ANNOUNCEMENT (NO EMAIL)
-    // ========================================
-    function likeAnnouncement(id) {
-        const user = getCurrentUser();
-        if (!user) return;
-        
-        logActivity(user.rollNo, 'like', `Liked announcement #${id}`);
-        
-        db.ref('likes').push({
-            announcement_id: id,
-            user_name: user.name,
-            user_email: user.email,
-            roll_no: user.rollNo,
-            timestamp: new Date().toISOString()
-        });
-        
-        alert('❤️ Liked!');
-    }
-
-    // ========================================
-    // CHECK MAINTENANCE
-    // ========================================
-    function checkMaintenance() {
-        db.ref('settings/maintenance').on('value', function(snap) {
-            if (snap.val() === 'on') {
-                document.getElementById('mainApp').style.display = 'none';
-                document.body.innerHTML = `
-                    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);color:white;text-align:center;font-family:Arial;padding:20px;">
-                        <div style="padding:50px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);max-width:500px;">
-                            <div style="font-size:80px;margin-bottom:20px;">🔧</div>
-                            <h1 style="font-size:36px;">Under Maintenance</h1>
-                            <p style="color:#a5b4fc;">We're updating our content. Please check back soon!</p>
-                        </div>
-                    </div>
-                `;
-            }
-        });
-    }
-
-    // ========================================
-    // LOGOUT
-    // ========================================
-    function logout() {
-        const user = getCurrentUser();
-        if (user) {
-            logActivity(user.rollNo, 'logout', 'User logged out');
+    function deleteAnnouncement(id) {
+        if (confirm('Delete this announcement?')) {
+            db.ref('announcements/' + id).remove();
         }
-        localStorage.removeItem('sk_user_data');
+    }
+
+    // ========================================
+    // LOAD STATS
+    // ========================================
+    function loadStats() {
+        db.ref('users').on('value', function(snap) {
+            const data = snap.val();
+            document.getElementById('totalUsers').textContent = data ? Object.keys(data).length : 0;
+        });
+        
+        db.ref('settings/maintenance').on('value', function(snap) {
+            const status = snap.val() === 'on' ? 'ON' : 'OFF';
+            document.getElementById('maintenanceStatus').textContent = 'Current: ' + status;
+            document.getElementById('maintenanceToggle').textContent = status === 'ON' ? 'Turn OFF' : 'Turn ON';
+            document.getElementById('maintenanceToggle').className = status === 'ON' ? 'btn-success' : 'btn-warning';
+        });
+    }
+
+    // ========================================
+    // TOGGLE MAINTENANCE
+    // ========================================
+    function toggleMaintenance() {
+        db.ref('settings/maintenance').once('value', function(snap) {
+            const current = snap.val() === 'on' ? 'off' : 'on';
+            db.ref('settings/maintenance').set(current);
+        });
+    }
+
+    // ========================================
+    // LOGOUT ADMIN
+    // ========================================
+    function logoutAdmin() {
+        sessionStorage.removeItem('admin_logged_in');
         location.reload();
     }
 
     // ========================================
     // EXPOSE FUNCTIONS
     // ========================================
-    window.markAsSeen = markAsSeen;
-    window.likeAnnouncement = likeAnnouncement;
-    window.logout = logout;
-    window.generateIDCard = generateIDCard;
-    window.sendAdminNotification = sendAdminNotification;
-    window.sendLoginEmail = sendLoginEmail;
+    window.deleteAnnouncement = deleteAnnouncement;
+    window.toggleMaintenance = toggleMaintenance;
+    window.logoutAdmin = logoutAdmin;
+    window.showAdminTab = showAdminTab;
     </script>
 </body>
 </html>
