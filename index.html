@@ -4,50 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SK Education</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="config.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 50%, #2d1b69 100%); min-height: 100vh; color: white; }
+
+        /* ===== LOGIN ===== */
+        #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-container { max-width: 420px; width: 100%; padding: 45px 35px; background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .login-logo { font-size: 60px; text-align: center; margin-bottom: 10px; }
+        .login-title { font-size: 28px; font-weight: 700; text-align: center; background: linear-gradient(90deg, #4cc9f0, #f72585); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        .login-subtitle { color: #a5b4fc; text-align: center; font-size: 15px; margin-bottom: 25px; }
+        .login-input-group { margin-bottom: 18px; }
+        .login-input-group label { display: block; color: #a5b4fc; font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+        .login-input-group input { width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 16px; }
+        .login-input-group input:focus { outline: none; border-color: #4361ee; background: rgba(255,255,255,0.08); }
+        .login-input-group input::placeholder { color: #4a5a7a; }
+        .login-btn { width: 100%; padding: 16px; background: linear-gradient(90deg, #4361ee, #f72585); border: none; border-radius: 12px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; }
+        .login-btn:hover { transform: scale(1.02); }
+        .login-error { color: #f72585; margin-top: 12px; text-align: center; font-size: 14px; display: none; }
+
+        /* ===== MAIN APP ===== */
+        #mainApp { display: none; }
+        .main-container { max-width: 1100px; margin: 0 auto; padding: 20px 25px 40px; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 25px; background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 30px; flex-wrap: wrap; gap: 12px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #4361ee, #f72585); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: white; }
+        .header-left h2 { font-size: 20px; color: white; margin: 0; }
+        .header-left small { color: #a5b4fc; font-size: 13px; display: block; }
+        .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .user-badge { background: rgba(67,97,238,0.2); padding: 6px 18px; border-radius: 50px; font-size: 14px; color: #a5b4fc; border: 1px solid rgba(67,97,238,0.15); }
+        .icon-btn { background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 50px; text-decoration: none; color: #a5b4fc; font-size: 18px; }
+        .icon-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+        .logout-link { background: none; border: none; color: #f72585; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 50px; }
+        .logout-link:hover { background: rgba(247,37,133,0.15); }
+
+        .announcement-box { background: rgba(67,97,238,0.12); border-left: 4px solid #4361ee; padding: 16px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .announcement-box .msg { flex: 1; color: white; }
+        .announcement-box .msg strong { color: #4cc9f0; display: block; font-size: 14px; }
+        .announcement-box .msg small { color: #6a7a9e; font-size: 12px; display: block; margin-top: 4px; }
+        .ann-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .seen-btn { background: rgba(76,201,240,0.15); color: #4cc9f0; border: 1px solid rgba(76,201,240,0.15); padding: 6px 16px; border-radius: 50px; cursor: pointer; font-size: 13px; }
+        .seen-btn:hover { background: rgba(76,201,240,0.3); }
+        .reply-btn { background: rgba(67,97,238,0.15); color: #4361ee; border: 1px solid rgba(67,97,238,0.15); padding: 6px 16px; border-radius: 50px; text-decoration: none; font-size: 13px; }
+        .reply-btn:hover { background: rgba(67,97,238,0.3); }
+
+        .section-title { font-size: 26px; font-weight: 700; margin: 30px 0 20px; background: linear-gradient(90deg, #4cc9f0, #f72585); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .batch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 15px; }
+        .batch-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); transition: all 0.4s; text-decoration: none; color: white; }
+        .batch-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); border-color: rgba(67,97,238,0.3); }
+        .batch-card img { width: 100%; height: 200px; object-fit: cover; }
+        .batch-card .batch-info { padding: 18px 20px 22px; }
+        .batch-card .batch-info h3 { font-size: 18px; margin-bottom: 4px; }
+        .batch-card .batch-info p { color: #a5b4fc; font-size: 14px; margin-bottom: 8px; }
+        .batch-badge { display: inline-block; background: rgba(67,97,238,0.2); padding: 3px 14px; border-radius: 50px; font-size: 12px; color: #a5b4fc; }
+
+        @media (max-width: 768px) {
+            .main-container { padding: 15px; }
+            .login-container { padding: 30px 20px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; }
+            .header-right { justify-content: center; }
+            .batch-grid { grid-template-columns: 1fr; }
+            .announcement-box { flex-direction: column; align-items: stretch; }
+            .ann-actions { justify-content: flex-end; }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ======================================== -->
-    <!-- LOGIN SCREEN -->
-    <!-- ======================================== -->
+    <!-- ===== LOGIN ===== -->
     <div id="loginScreen">
         <div class="login-container">
             <div class="login-logo">📚</div>
             <h2 class="login-title">Welcome to SK Education</h2>
-            <p class="login-subtitle">Enter your details to access study materials</p>
-            
+            <p class="login-subtitle">Enter your name to access study materials</p>
             <form id="loginForm">
                 <div class="login-input-group">
-                    <label>👤 Full Name</label>
+                    <label>👤 Your Name</label>
                     <input type="text" id="loginName" placeholder="Enter your full name" required>
                 </div>
-                
-                <div class="login-input-group">
-                    <label>📧 Email Address</label>
-                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
-                </div>
-                
-                <div class="login-input-group">
-                    <label>🎓 Class</label>
-                    <input type="text" id="loginClass" value="Class 10" readonly>
-                </div>
-                
-                <button type="submit" class="login-btn">🚀 Continue to Study</button>
+                <button type="submit" class="login-btn">🚀 Continue</button>
                 <div id="loginError" class="login-error"></div>
             </form>
         </div>
     </div>
 
-    <!-- ======================================== -->
-    <!-- MAIN APP -->
-    <!-- ======================================== -->
-    <div id="mainApp" style="display:none;">
+    <!-- ===== MAIN APP ===== -->
+    <div id="mainApp">
         <div class="main-container">
             
             <!-- HEADER -->
@@ -103,19 +150,16 @@
 
     <script>
     // ========================================
-    // CHECK LOGIN STATUS
+    // CHECK LOGIN
     // ========================================
-    const user = getCurrentUser();
+    const userName = getUserName();
     
-    if (user) {
+    if (userName) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        document.getElementById('userDisplay').textContent = '👋 ' + user.name;
-        document.getElementById('userDisplay').title = 'Roll No: ' + user.rollNo;
+        document.getElementById('userDisplay').textContent = '👋 ' + userName;
         loadAnnouncements();
         checkMaintenance();
-        // Log login activity
-        logActivity(user.rollNo, 'login', 'User logged in');
     } else {
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
@@ -124,206 +168,23 @@
     // ========================================
     // LOGIN FORM
     // ========================================
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         const name = document.getElementById('loginName').value.trim();
-        const email = document.getElementById('loginEmail').value.trim();
         const errorDiv = document.getElementById('loginError');
         
-        // Reset error
         errorDiv.style.display = 'none';
-        errorDiv.textContent = '';
         
-        // Validation
-        if (!name || !email) {
+        if (!name) {
             errorDiv.style.display = 'block';
-            errorDiv.textContent = '⚠️ Please fill all fields!';
+            errorDiv.textContent = '⚠️ Please enter your name!';
             return;
         }
         
-        if (!email.includes('@') || !email.includes('.')) {
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = '⚠️ Please enter a valid email!';
-            return;
-        }
-        
-        try {
-            // Check if user exists
-            const snapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
-            let userData = null;
-            let userId = null;
-            let isNewUser = false;
-            
-            if (snapshot.exists()) {
-                snapshot.forEach(function(child) {
-                    userData = child.val();
-                    userId = child.key;
-                });
-            } else {
-                // New user
-                isNewUser = true;
-                const rollNo = await generateRollNumber();
-                userData = {
-                    name: name,
-                    email: email,
-                    class: 'Class 10',
-                    rollNo: rollNo,
-                    createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString()
-                };
-                const newUserRef = await db.ref('users').push(userData);
-                userId = newUserRef.key;
-            }
-            
-            // Save to localStorage
-            const userToSave = {
-                id: userId,
-                name: userData.name,
-                email: userData.email,
-                class: userData.class || 'Class 10',
-                rollNo: userData.rollNo,
-                isNew: isNewUser
-            };
-            localStorage.setItem('sk_user_data', JSON.stringify(userToSave));
-            
-            // Log activity
-            await logActivity(userData.rollNo, 'login', `User logged in`);
-            
-            // Send email to user (silent)
-            sendLoginEmail(userData);
-            
-            // Send admin notification
-            sendAdminNotification(userData, 'login');
-            
-            // Generate ID card for new user
-            if (isNewUser) {
-                setTimeout(() => {
-                    generateIDCard(userData);
-                }, 1500);
-            }
-            
-            // Reload page
-            location.reload();
-            
-        } catch (err) {
-            console.error('Login error:', err);
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = '❌ Something went wrong. Please try again.';
-        }
+        setUserName(name);
+        location.reload();
     });
-
-    // ========================================
-    // SEND EMAIL TO USER (SILENT)
-    // ========================================
-    function sendLoginEmail(userData) {
-        // Using mailto: silently (opens email client)
-        const subject = encodeURIComponent('Welcome to SK Education - Login Confirmation');
-        const body = encodeURIComponent(`
-Dear ${userData.name},
-
-✅ You have successfully logged into SK Education!
-
-📅 Login Time: ${new Date().toLocaleString()}
-👤 Name: ${userData.name}
-📧 Email: ${userData.email}
-🎓 Class: Class 10
-🆔 Roll No: ${userData.rollNo}
-
-🌐 Website: https://skeducation.vercel.app/
-
-Keep learning and growing!
-
-Best Regards,
-SK Education Team
-        `);
-        
-        // Open email client silently
-        const mailtoLink = document.createElement('a');
-        mailtoLink.href = `mailto:${userData.email}?subject=${subject}&body=${body}`;
-        mailtoLink.style.display = 'none';
-        document.body.appendChild(mailtoLink);
-        mailtoLink.click();
-        document.body.removeChild(mailtoLink);
-    }
-
-    // ========================================
-    // SEND ADMIN NOTIFICATION
-    // ========================================
-    function sendAdminNotification(userData, action) {
-        const subject = encodeURIComponent(`🔔 User ${action}: ${userData.name}`);
-        const body = encodeURIComponent(`
-📌 User Activity Notification
-
-👤 Name: ${userData.name}
-📧 Email: ${userData.email}
-🆔 Roll No: ${userData.rollNo}
-📅 Time: ${new Date().toLocaleString()}
-🎯 Action: ${action}
-🌐 IP: ${window.location.hostname}
-
----
-SK Education Admin Panel
-        `);
-        
-        // Open admin email client
-        const mailtoLink = document.createElement('a');
-        mailtoLink.href = `mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`;
-        mailtoLink.style.display = 'none';
-        document.body.appendChild(mailtoLink);
-        mailtoLink.click();
-        document.body.removeChild(mailtoLink);
-    }
-
-    // ========================================
-    // GENERATE ID CARD PDF
-    // ========================================
-    function generateIDCard(userData) {
-        const idCardHTML = `
-            <div id="idCard" style="width:400px;padding:25px;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);border-radius:16px;border:2px solid #4361ee;font-family:Arial;color:white;text-align:center;">
-                <div style="border-bottom:2px solid #4361ee;padding-bottom:15px;margin-bottom:15px;">
-                    <div style="font-size:28px;font-weight:900;background:linear-gradient(90deg,#4cc9f0,#f72585);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SK Education</div>
-                    <div style="font-size:12px;color:#a5b4fc;">Student ID Card</div>
-                </div>
-                <div style="font-size:50px;margin:10px 0;">📚</div>
-                <div style="font-size:20px;font-weight:bold;margin:5px 0;">${userData.name}</div>
-                <div style="font-size:14px;color:#a5b4fc;">${userData.email}</div>
-                <div style="margin:12px 0;padding:10px;background:rgba(67,97,238,0.2);border-radius:10px;">
-                    <div>🎓 ${userData.class || 'Class 10'}</div>
-                    <div>🆔 Roll No: ${userData.rollNo}</div>
-                </div>
-                <div style="border-top:2px solid #4361ee;padding-top:10px;margin-top:10px;font-size:10px;color:#6a7a9e;">
-                    Valid until: ${new Date().toISOString().split('T')[0]}
-                </div>
-            </div>
-        `;
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = idCardHTML;
-        tempDiv.style.position = 'fixed';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.top = '0';
-        document.body.appendChild(tempDiv);
-        
-        const idCardElement = tempDiv.querySelector('#idCard');
-        
-        html2canvas(idCardElement, {
-            scale: 2,
-            backgroundColor: '#0c0c2e'
-        }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a6');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`SK_Education_ID_${userData.name}.pdf`);
-            document.body.removeChild(tempDiv);
-        }).catch(err => {
-            console.error('PDF generation error:', err);
-            document.body.removeChild(tempDiv);
-        });
-    }
 
     // ========================================
     // LOAD ANNOUNCEMENTS
@@ -347,8 +208,7 @@ SK Education Admin Panel
                             </div>
                             <div class="ann-actions">
                                 <button class="seen-btn" onclick="markAsSeen('${key}')">✓ Seen</button>
-                                <button class="like-btn" onclick="likeAnnouncement('${key}')">❤️ Like</button>
-                                <a href="mailto:${ADMIN_EMAIL}?subject=Reply to Announcement" class="reply-btn">✉ Reply</a>
+                                <a href="mailto:${ADMIN_EMAIL}?subject=Reply to Announcement" class="reply-btn" onclick="event.stopPropagation();">✉ Reply</a>
                             </div>
                         </div>
                     `;
@@ -361,43 +221,16 @@ SK Education Admin Panel
     // MARK AS SEEN
     // ========================================
     function markAsSeen(id) {
-        const user = getCurrentUser();
-        if (!user) return;
-        
-        logActivity(user.rollNo, 'seen', `Marked announcement #${id} as seen`);
+        const name = getUserName() || 'Unknown';
         
         db.ref('seen_announcements').push({
             announcement_id: id,
-            user_name: user.name,
-            user_email: user.email,
-            roll_no: user.rollNo,
+            user_name: name,
             timestamp: new Date().toISOString()
         });
         
-        sendAdminNotification(user, 'seen_announcement');
         document.getElementById('ann-' + id).style.opacity = '0.5';
         alert('✅ Marked as seen!');
-    }
-
-    // ========================================
-    // LIKE ANNOUNCEMENT
-    // ========================================
-    function likeAnnouncement(id) {
-        const user = getCurrentUser();
-        if (!user) return;
-        
-        logActivity(user.rollNo, 'like', `Liked announcement #${id}`);
-        
-        db.ref('likes').push({
-            announcement_id: id,
-            user_name: user.name,
-            user_email: user.email,
-            roll_no: user.rollNo,
-            timestamp: new Date().toISOString()
-        });
-        
-        sendAdminNotification(user, 'liked_announcement');
-        alert('❤️ Liked!');
     }
 
     // ========================================
@@ -424,23 +257,12 @@ SK Education Admin Panel
     // LOGOUT
     // ========================================
     function logout() {
-        const user = getCurrentUser();
-        if (user) {
-            logActivity(user.rollNo, 'logout', 'User logged out');
-        }
-        localStorage.removeItem('sk_user_data');
+        clearUserName();
         location.reload();
     }
 
-    // ========================================
-    // EXPOSE FUNCTIONS
-    // ========================================
     window.markAsSeen = markAsSeen;
-    window.likeAnnouncement = likeAnnouncement;
     window.logout = logout;
-    window.generateIDCard = generateIDCard;
-    window.sendAdminNotification = sendAdminNotification;
-    window.sendLoginEmail = sendLoginEmail;
     </script>
 </body>
 </html>

@@ -8,296 +8,58 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="config.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 50%, #2d1b69 100%); min-height: 100vh; color: white; }
 
-        body {
-            background: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 50%, #2d1b69 100%);
-            min-height: 100vh;
-            color: white;
-        }
+        .main-container { max-width: 800px; margin: 0 auto; padding: 20px 25px 40px; }
 
-        .main-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px 25px 40px;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 25px; background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 30px; flex-wrap: wrap; gap: 12px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #4361ee, #f72585); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: white; }
+        .header-left h2 { font-size: 20px; color: white; margin: 0; }
+        .header-left small { color: #a5b4fc; font-size: 13px; display: block; }
+        .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .user-badge { background: rgba(67,97,238,0.2); padding: 6px 18px; border-radius: 50px; font-size: 14px; color: #a5b4fc; border: 1px solid rgba(67,97,238,0.15); }
+        .icon-btn { background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 50px; text-decoration: none; color: #a5b4fc; font-size: 18px; }
+        .icon-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+        .logout-link { background: none; border: none; color: #f72585; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 50px; }
+        .logout-link:hover { background: rgba(247,37,133,0.15); }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 25px;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(12px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
+        .announcement-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 16px; padding: 22px 25px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06); }
+        .announcement-card:hover { background: rgba(255,255,255,0.06); }
+        .ann-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+        .ann-badge { font-size: 14px; background: rgba(67,97,238,0.15); padding: 4px 14px; border-radius: 50px; color: #4cc9f0; }
+        .ann-date { color: #6a7a9e; font-size: 13px; }
+        .ann-card-body { font-size: 17px; line-height: 1.7; color: white; margin-bottom: 16px; padding: 10px 0; }
+        .ann-card-footer { display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 14px; }
+        .seen-btn { background: rgba(76,201,240,0.15); color: #4cc9f0; border: 1px solid rgba(76,201,240,0.15); padding: 6px 18px; border-radius: 50px; cursor: pointer; font-size: 13px; }
+        .seen-btn:hover { background: rgba(76,201,240,0.3); }
+        .reply-btn { background: rgba(67,97,238,0.15); color: #4361ee; border: 1px solid rgba(67,97,238,0.15); padding: 6px 18px; border-radius: 50px; text-decoration: none; font-size: 13px; }
+        .reply-btn:hover { background: rgba(67,97,238,0.3); }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        .reply-section { margin-top: 35px; padding: 30px; background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); text-align: center; }
+        .reply-section h3 { color: white; font-size: 22px; margin-bottom: 5px; }
+        .reply-section p { color: #a5b4fc; font-size: 14px; margin-bottom: 15px; }
+        .reply-btn-large { display: inline-block; padding: 14px 40px; background: linear-gradient(90deg, #f72585, #4361ee); border-radius: 12px; color: white; text-decoration: none; font-weight: 600; font-size: 16px; }
+        .reply-btn-large:hover { transform: scale(1.03); }
 
-        .logo-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4361ee, #f72585);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 16px;
-            color: white;
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-        }
-
-        .header-left h2 {
-            font-size: 20px;
-            color: white;
-            margin: 0;
-        }
-
-        .header-left small {
-            color: #a5b4fc;
-            font-size: 13px;
-            display: block;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .user-badge {
-            background: rgba(67, 97, 238, 0.2);
-            padding: 6px 18px;
-            border-radius: 50px;
-            font-size: 14px;
-            color: #a5b4fc;
-            border: 1px solid rgba(67, 97, 238, 0.15);
-        }
-
-        .icon-btn {
-            background: rgba(255, 255, 255, 0.06);
-            padding: 8px 14px;
-            border-radius: 50px;
-            text-decoration: none;
-            color: #a5b4fc;
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: white;
-        }
-
-        .logout-link {
-            background: none;
-            border: none;
-            color: #f72585;
-            font-size: 13px;
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 50px;
-            transition: 0.3s;
-        }
-
-        .logout-link:hover {
-            background: rgba(247, 37, 133, 0.15);
-        }
-
-        .announcement-card {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(8px);
-            border-radius: 16px;
-            padding: 22px 25px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s ease;
-        }
-
-        .announcement-card:hover {
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .ann-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .ann-badge {
-            font-size: 14px;
-            background: rgba(67, 97, 238, 0.15);
-            padding: 4px 14px;
-            border-radius: 50px;
-            color: #4cc9f0;
-        }
-
-        .ann-date {
-            color: #6a7a9e;
-            font-size: 13px;
-        }
-
-        .ann-card-body {
-            font-size: 17px;
-            line-height: 1.7;
-            color: white;
-            margin-bottom: 16px;
-            padding: 10px 0;
-        }
-
-        .ann-card-footer {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 14px;
-        }
-
-        .seen-btn {
-            background: rgba(76, 201, 240, 0.15);
-            color: #4cc9f0;
-            border: 1px solid rgba(76, 201, 240, 0.15);
-            padding: 6px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-
-        .seen-btn:hover {
-            background: rgba(76, 201, 240, 0.3);
-        }
-
-        .reply-btn {
-            background: rgba(67, 97, 238, 0.15);
-            color: #4361ee;
-            border: 1px solid rgba(67, 97, 238, 0.15);
-            padding: 6px 18px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-
-        .reply-btn:hover {
-            background: rgba(67, 97, 238, 0.3);
-        }
-
-        .reply-section {
-            margin-top: 35px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            text-align: center;
-        }
-
-        .reply-section h3 {
-            color: white;
-            font-size: 22px;
-            margin-bottom: 5px;
-        }
-
-        .reply-section p {
-            color: #a5b4fc;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .reply-btn-large {
-            display: inline-block;
-            padding: 14px 40px;
-            background: linear-gradient(90deg, #f72585, #4361ee);
-            border-radius: 12px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .reply-btn-large:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 30px rgba(247, 37, 133, 0.3);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: #6a7a9e;
-            font-size: 16px;
-        }
-
-        .empty-state .icon {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #a5b4fc;
-        }
+        .empty-state { text-align: center; padding: 50px 20px; color: #6a7a9e; font-size: 16px; }
+        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+        .loading { text-align: center; padding: 40px; color: #a5b4fc; }
 
         @media (max-width: 768px) {
-            .main-container {
-                padding: 15px;
-            }
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-            .header-right {
-                justify-content: center;
-            }
-            .announcement-card {
-                padding: 18px;
-            }
-            .ann-card-body {
-                font-size: 15px;
-            }
-            .reply-section {
-                padding: 20px;
-            }
-            .reply-btn-large {
-                padding: 12px 25px;
-                font-size: 14px;
-            }
+            .main-container { padding: 15px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; }
+            .header-right { justify-content: center; }
+            .announcement-card { padding: 18px; }
+            .ann-card-body { font-size: 15px; }
+            .reply-section { padding: 20px; }
+            .reply-btn-large { padding: 12px 25px; font-size: 14px; }
         }
-
         @media (max-width: 480px) {
-            .ann-card-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .ann-card-footer {
-                flex-direction: column;
-            }
-            .ann-card-footer button,
-            .ann-card-footer a {
-                width: 100%;
-                text-align: center;
-            }
+            .ann-card-header { flex-direction: column; align-items: flex-start; }
+            .ann-card-footer { flex-direction: column; }
+            .ann-card-footer button, .ann-card-footer a { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -339,13 +101,13 @@
     // ========================================
     // CHECK LOGIN
     // ========================================
-    const user = getCurrentUser();
+    const userName = getUserName();
     
-    if (!user) {
+    if (!userName) {
         window.location.href = 'index.html';
         return;
     }
-    document.getElementById('userDisplay').textContent = '👋 ' + user.name;
+    document.getElementById('userDisplay').textContent = '👋 ' + userName;
 
     // ========================================
     // LOAD ANNOUNCEMENTS
@@ -389,19 +151,14 @@
     });
 
     // ========================================
-    // MARK AS SEEN (NO EMAIL)
+    // MARK AS SEEN
     // ========================================
     function markAsSeen(id) {
-        const user = getCurrentUser();
-        if (!user) return;
-        
-        logActivity(user.rollNo, 'seen', `Marked announcement #${id} as seen`);
+        const name = getUserName() || 'Unknown';
         
         db.ref('seen_announcements').push({
             announcement_id: id,
-            user_name: user.name,
-            user_email: user.email,
-            roll_no: user.rollNo,
+            user_name: name,
             timestamp: new Date().toISOString()
         });
         
@@ -430,7 +187,7 @@
     // LOGOUT
     // ========================================
     function logout() {
-        localStorage.removeItem('sk_user_data');
+        clearUserName();
         window.location.href = 'index.html';
     }
 

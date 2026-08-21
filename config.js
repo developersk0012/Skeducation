@@ -19,10 +19,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // ============================================
-// 2. ADMIN EMAIL
+// 2. ADMIN EMAIL (Sirf Reply ke liye)
 // ============================================
 const ADMIN_EMAIL = 'satendrakkushwaha12@gmail.com';
-const WEBSITE_URL = 'https://skeducation.vercel.app/';
 
 // ============================================
 // 3. BATCH DETAILS
@@ -108,65 +107,35 @@ function getUrlParam(name) {
     return urlParams.get(name);
 }
 
-function getCurrentUser() {
-    try {
-        const userData = localStorage.getItem('sk_user_data');
-        if (userData) {
-            return JSON.parse(userData);
-        }
-    } catch (e) {
-        console.error('Error getting user:', e);
-    }
-    return null;
+function getUserName() {
+    return localStorage.getItem('sk_user_name') || null;
+}
+
+function setUserName(name) {
+    localStorage.setItem('sk_user_name', name);
+}
+
+function clearUserName() {
+    localStorage.removeItem('sk_user_name');
 }
 
 function isUserLoggedIn() {
-    return getCurrentUser() !== null;
-}
-
-async function generateRollNumber() {
-    try {
-        const snapshot = await db.ref('users').once('value');
-        const data = snapshot.val();
-        if (data) {
-            return Object.keys(data).length + 1;
-        }
-        return 1;
-    } catch (e) {
-        console.error('Error generating roll number:', e);
-        return 1;
-    }
-}
-
-function logActivity(userId, action, details) {
-    try {
-        const user = getCurrentUser();
-        db.ref('activities').push({
-            roll_no: userId,
-            user_name: user?.name || 'Unknown',
-            action: action,
-            details: details || '',
-            timestamp: new Date().toISOString()
-        });
-    } catch (e) {
-        console.error('Error logging activity:', e);
-    }
+    return getUserName() !== null;
 }
 
 // ============================================
 // 7. EXPOSE GLOBALLY
 // ============================================
 window.db = db;
-window.getCurrentUser = getCurrentUser;
+window.getUserName = getUserName;
+window.setUserName = setUserName;
+window.clearUserName = clearUserName;
 window.isUserLoggedIn = isUserLoggedIn;
-window.generateRollNumber = generateRollNumber;
-window.logActivity = logActivity;
 window.getUrlParam = getUrlParam;
 window.BATCHES = BATCHES;
 window.CATEGORIES = CATEGORIES;
 window.CATEGORY_ICONS = CATEGORY_ICONS;
 window.SUBCATEGORIES = SUBCATEGORIES;
 window.ADMIN_EMAIL = ADMIN_EMAIL;
-window.WEBSITE_URL = WEBSITE_URL;
 
 console.log('✅ SK Education Config Loaded!');
