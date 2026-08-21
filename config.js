@@ -170,5 +170,3 @@ window.ADMIN_EMAIL = ADMIN_EMAIL;
 window.WEBSITE_URL = WEBSITE_URL;
 
 console.log('✅ SK Education Config Loaded!');
-console.log('📦 BATCHES:', BATCHES);
-console.log('📂 CATEGORIES:', CATEGORIES);

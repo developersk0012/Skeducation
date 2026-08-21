@@ -27,7 +27,6 @@
             padding: 20px 25px 40px;
         }
 
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -120,7 +119,6 @@
             background: rgba(247, 37, 133, 0.15);
         }
 
-        /* Announcement Cards */
         .announcement-card {
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(8px);
@@ -145,10 +143,11 @@
         }
 
         .ann-badge {
-            font-size: 18px;
+            font-size: 14px;
             background: rgba(67, 97, 238, 0.15);
             padding: 4px 14px;
             border-radius: 50px;
+            color: #4cc9f0;
         }
 
         .ann-date {
@@ -202,7 +201,6 @@
             background: rgba(67, 97, 238, 0.3);
         }
 
-        /* Reply Section */
         .reply-section {
             margin-top: 35px;
             padding: 30px;
@@ -241,7 +239,6 @@
             box-shadow: 0 8px 30px rgba(247, 37, 133, 0.3);
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 50px 20px;
@@ -261,34 +258,27 @@
             color: #a5b4fc;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .main-container {
                 padding: 15px;
             }
-
             .header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
             }
-
             .header-right {
                 justify-content: center;
             }
-
             .announcement-card {
                 padding: 18px;
             }
-
             .ann-card-body {
                 font-size: 15px;
             }
-
             .reply-section {
                 padding: 20px;
             }
-
             .reply-btn-large {
                 padding: 12px 25px;
                 font-size: 14px;
@@ -300,11 +290,9 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-
             .ann-card-footer {
                 flex-direction: column;
             }
-
             .ann-card-footer button,
             .ann-card-footer a {
                 width: 100%;
@@ -334,7 +322,7 @@
 
         <!-- ANNOUNCEMENTS LIST -->
         <div id="announcementsList">
-            <div class="loading">Loading announcements...</div>
+            <div class="loading">⏳ Loading announcements...</div>
         </div>
 
         <!-- REPLY SECTION -->
@@ -355,6 +343,7 @@
     
     if (!user) {
         window.location.href = 'index.html';
+        return;
     }
     document.getElementById('userDisplay').textContent = '👋 ' + user.name;
 
@@ -445,9 +434,6 @@
         window.location.href = 'index.html';
     }
 
-    // ========================================
-    // EXPOSE FUNCTIONS
-    // ========================================
     window.markAsSeen = markAsSeen;
     window.logout = logout;
     </script>

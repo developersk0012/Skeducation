@@ -272,25 +272,20 @@
             .main-container {
                 padding: 15px;
             }
-
             .header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
             }
-
             .header-right {
                 justify-content: center;
             }
-
             .tabs {
                 flex-direction: column;
             }
-
             .tab {
                 padding: 10px;
             }
-
             .material-item {
                 flex-direction: column;
                 align-items: center;
@@ -307,7 +302,7 @@
             <div class="header-left">
                 <div class="logo-icon">SK</div>
                 <div>
-                    <h2 id="categoryTitle">Category</h2>
+                    <h2 id="categoryTitle">Loading...</h2>
                     <small id="batchNameDisplay">Loading...</small>
                 </div>
             </div>
@@ -326,12 +321,12 @@
 
         <!-- PDF CONTENT -->
         <div id="pdfContent" class="tab-content active">
-            <div class="loading">Loading PDFs...</div>
+            <div class="loading">⏳ Loading PDFs...</div>
         </div>
 
         <!-- VIDEO CONTENT -->
         <div id="videoContent" class="tab-content">
-            <div class="loading">Loading Videos...</div>
+            <div class="loading">⏳ Loading Videos...</div>
         </div>
 
         <a href="batch.html?batch=" id="backLink" class="back-link">← Back to Subjects</a>
@@ -357,9 +352,6 @@
     const batchId = urlParams.get('batch') || '1';
     const catKey = urlParams.get('cat') || 'science';
 
-    console.log('📌 Batch ID:', batchId);
-    console.log('📌 Category Key:', catKey);
-
     // Update header
     const categoryName = CATEGORIES[catKey] || 'Category';
     const batchName = BATCHES[batchId]?.name || 'Batch';
@@ -379,17 +371,11 @@
         pdfContainer.innerHTML = '<div class="loading">⏳ Loading PDFs...</div>';
         videoContainer.innerHTML = '<div class="loading">⏳ Loading Videos...</div>';
 
-        console.log('📂 Loading materials for batch:', batchId, 'category:', catKey);
-
         db.ref('pdfs').orderByChild('batch_id').equalTo(parseInt(batchId)).once('value')
         .then(function(snap) {
             const data = snap.val();
             let pdfHtml = '';
             let videoHtml = '';
-            let hasPdf = false;
-            let hasVideo = false;
-            
-            console.log('📄 PDF Data:', data);
             
             if (data) {
                 Object.values(data).forEach(function(pdf) {
@@ -410,10 +396,8 @@
                         
                         if (pdf.type === 'pdf') {
                             pdfHtml += itemHtml;
-                            hasPdf = true;
                         } else {
                             videoHtml += itemHtml;
-                            hasVideo = true;
                         }
                     }
                 });
@@ -421,12 +405,9 @@
 
             pdfContainer.innerHTML = pdfHtml || '<div class="empty-state"><span class="icon">📭</span>No PDFs available</div>';
             videoContainer.innerHTML = videoHtml || '<div class="empty-state"><span class="icon">🎬</span>No Videos available</div>';
-            
-            console.log('✅ PDFs loaded:', hasPdf ? 'Yes' : 'No');
-            console.log('✅ Videos loaded:', hasVideo ? 'Yes' : 'No');
         })
         .catch(function(err) {
-            console.error('❌ Error loading materials:', err);
+            console.error('Error loading materials:', err);
             pdfContainer.innerHTML = '<div style="color:#f72585;text-align:center;padding:40px;">❌ Error loading materials</div>';
             videoContainer.innerHTML = '<div style="color:#f72585;text-align:center;padding:40px;">❌ Error loading materials</div>';
         });
@@ -443,8 +424,8 @@
         document.getElementById(type + 'Content').classList.add('active');
     }
 
-    // Load materials after a small delay
-    setTimeout(loadMaterials, 500);
+    // Load materials
+    loadMaterials();
 
     // ========================================
     // CHECK MAINTENANCE
@@ -471,9 +452,6 @@
         window.location.href = 'index.html';
     }
 
-    // ========================================
-    // EXPOSE FUNCTIONS
-    // ========================================
     window.showTab = showTab;
     window.logout = logout;
     </script>

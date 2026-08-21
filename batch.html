@@ -221,29 +221,23 @@
             .main-container {
                 padding: 15px;
             }
-
             .header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
             }
-
             .header-right {
                 justify-content: center;
             }
-
             .batch-banner img {
                 height: 160px;
             }
-
             .batch-banner-info {
                 padding: 18px 20px;
             }
-
             .batch-banner-info h1 {
                 font-size: 22px;
             }
-
             .category-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -264,8 +258,8 @@
             <div class="header-left">
                 <div class="logo-icon">SK</div>
                 <div>
-                    <h2 id="batchTitle">Batch</h2>
-                    <small id="batchSubtitle">Loading...</small>
+                    <h2 id="batchTitle">Loading...</h2>
+                    <small id="batchSubtitle">Select a subject</small>
                 </div>
             </div>
             <div class="header-right">
@@ -279,15 +273,15 @@
         <div class="batch-banner">
             <img id="batchImage" src="" alt="Batch" onerror="this.src='https://via.placeholder.com/800x250/4361ee/white?text=SK+Education'">
             <div class="batch-banner-info">
-                <h1 id="batchName">Batch</h1>
-                <p id="batchDesc">Description</p>
+                <h1 id="batchName">Loading...</h1>
+                <p id="batchDesc">Loading...</p>
             </div>
         </div>
 
         <!-- CATEGORIES -->
         <h2 class="section-title">📖 Subjects</h2>
         <div class="category-grid" id="categoryGrid">
-            <div class="loading">Loading categories...</div>
+            <div class="loading">⏳ Loading categories...</div>
         </div>
 
         <a href="index.html" class="back-link">← Back to Batches</a>
@@ -312,43 +306,34 @@
     const urlParams = new URLSearchParams(window.location.search);
     const batchId = urlParams.get('batch') || '1';
 
-    console.log('📌 Batch ID from URL:', batchId);
-    console.log('📦 Available Batches:', BATCHES);
+    console.log('📌 Batch ID:', batchId);
+    console.log('📦 BATCHES:', BATCHES);
 
-    // Batch details - using BATCHES from config.js
+    // Get batch details
     const batch = BATCHES[batchId];
 
     if (!batch) {
-        console.error('❌ Batch not found for ID:', batchId);
         document.getElementById('batchTitle').textContent = 'Batch Not Found';
-        document.getElementById('batchSubtitle').textContent = 'Please go back';
         document.getElementById('batchName').textContent = 'Error';
         document.getElementById('batchDesc').textContent = 'Batch not found';
     } else {
-        console.log('✅ Batch found:', batch);
         document.getElementById('batchTitle').textContent = batch.icon + ' ' + batch.name;
-        document.getElementById('batchSubtitle').textContent = 'Select a subject';
         document.getElementById('batchImage').src = batch.image;
         document.getElementById('batchName').textContent = batch.icon + ' ' + batch.name;
         document.getElementById('batchDesc').textContent = batch.description;
     }
 
     // ========================================
-    // LOAD CATEGORIES WITH PDF COUNTS
+    // LOAD CATEGORIES
     // ========================================
     function loadCategories() {
         const grid = document.getElementById('categoryGrid');
         grid.innerHTML = '<div class="loading">⏳ Loading categories...</div>';
 
-        console.log('📂 Loading categories for batch:', batchId);
-
-        // Get all PDFs for this batch
         db.ref('pdfs').orderByChild('batch_id').equalTo(parseInt(batchId)).once('value')
         .then(function(snap) {
             const data = snap.val();
             const categoryCount = {};
-            
-            console.log('📄 PDF Data:', data);
             
             if (data) {
                 Object.values(data).forEach(function(pdf) {
@@ -358,8 +343,6 @@
                     }
                 });
             }
-
-            console.log('📊 Category Count:', categoryCount);
 
             let html = '';
             let hasCategories = false;
@@ -385,13 +368,13 @@
             }
         })
         .catch(function(err) {
-            console.error('❌ Error loading categories:', err);
-            grid.innerHTML = '<div style="color:#f72585;text-align:center;padding:40px;">❌ Error loading categories. Please try again.</div>';
+            console.error('Error loading categories:', err);
+            grid.innerHTML = '<div style="color:#f72585;text-align:center;padding:40px;">❌ Error loading categories</div>';
         });
     }
 
-    // Load categories after a small delay to ensure Firebase is ready
-    setTimeout(loadCategories, 500);
+    // Load categories
+    loadCategories();
 
     // ========================================
     // CHECK MAINTENANCE
@@ -418,9 +401,6 @@
         window.location.href = 'index.html';
     }
 
-    // ========================================
-    // EXPOSE FUNCTIONS
-    // ========================================
     window.logout = logout;
     </script>
 </body>
