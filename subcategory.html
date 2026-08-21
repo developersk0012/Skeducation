@@ -4,60 +4,373 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Materials - SK Education</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 50%, #2d1b69 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 25px 40px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 25px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4361ee, #f72585);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .header-left h2 {
+            font-size: 20px;
+            color: white;
+            margin: 0;
+        }
+
+        .header-left small {
+            color: #a5b4fc;
+            font-size: 13px;
+            display: block;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            background: rgba(67, 97, 238, 0.2);
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 14px;
+            color: #a5b4fc;
+            border: 1px solid rgba(67, 97, 238, 0.15);
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 8px 14px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #a5b4fc;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .logout-link {
+            background: none;
+            border: none;
+            color: #f72585;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 50px;
+            transition: 0.3s;
+        }
+
+        .logout-link:hover {
+            background: rgba(247, 37, 133, 0.15);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: #a5b4fc;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(90deg, #4361ee, #f72585);
+            color: white;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Materials */
+        .material-item {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .material-item:hover {
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .material-icon {
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .material-info {
+            flex: 1;
+        }
+
+        .material-info h4 {
+            font-size: 17px;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .material-info p {
+            color: #a5b4fc;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .material-thumb {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .material-btn {
+            display: inline-block;
+            padding: 8px 22px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .material-btn:hover {
+            transform: scale(1.03);
+        }
+
+        .pdf-btn {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .video-btn {
+            background: linear-gradient(90deg, #f72585, #c91d6b);
+            color: white;
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6a7a9e;
+            font-size: 16px;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #a5b4fc;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4cc9f0;
+            text-decoration: none;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .header-right {
+                justify-content: center;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                padding: 10px;
+            }
+
+            .material-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <div class="main-container">
-            <!-- Header -->
-            <div class="header">
-                <div class="header-left">
-                    <div class="logo-icon">SK</div>
-                    <div>
-                        <h2 id="categoryTitle">Category</h2>
-                        <small id="batchNameDisplay">Loading...</small>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <span class="user-badge" id="userDisplay">👋 User</span>
-                    <a href="batch.html?batch=" id="backToBatch" class="icon-btn" title="Back">←</a>
-                    <button onclick="logout()" class="logout-link">Logout</button>
+    <div class="main-container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-icon">SK</div>
+                <div>
+                    <h2 id="categoryTitle">Category</h2>
+                    <small id="batchNameDisplay">Loading...</small>
                 </div>
             </div>
-
-            <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab active" onclick="showTab('pdf', this)">📄 PDFs</button>
-                <button class="tab" onclick="showTab('video', this)">🎥 Videos</button>
+            <div class="header-right">
+                <span class="user-badge" id="userDisplay">👋 User</span>
+                <a href="batch.html?batch=" id="backToBatch" class="icon-btn">←</a>
+                <button onclick="logout()" class="logout-link">Logout</button>
             </div>
-
-            <!-- Content -->
-            <div id="pdfContent" class="tab-content"></div>
-            <div id="videoContent" class="tab-content" style="display:none;"></div>
         </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('pdf', this)">📄 PDFs</button>
+            <button class="tab" onclick="showTab('video', this)">🎥 Videos</button>
+        </div>
+
+        <!-- PDF CONTENT -->
+        <div id="pdfContent" class="tab-content active">
+            <div class="loading">Loading PDFs...</div>
+        </div>
+
+        <!-- VIDEO CONTENT -->
+        <div id="videoContent" class="tab-content">
+            <div class="loading">Loading Videos...</div>
+        </div>
+
+        <a href="batch.html?batch=" id="backLink" class="back-link">← Back to Subjects</a>
     </div>
 
     <script>
-    // Check login
-    const userName = sessionStorage.getItem('user_name');
-    if (!userName) {
+    // ========================================
+    // CHECK USER LOGIN
+    // ========================================
+    const user = getCurrentUser();
+    
+    if (!user) {
         window.location.href = 'index.html';
+        return;
     }
-    document.getElementById('userDisplay').textContent = '👋 ' + userName;
 
-    // Get params
-    const batchId = getUrlParam('batch') || 1;
-    const catKey = getUrlParam('cat') || 'science';
+    document.getElementById('userDisplay').textContent = '👋 ' + user.name;
+
+    // ========================================
+    // GET PARAMS
+    // ========================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const batchId = urlParams.get('batch') || '1';
+    const catKey = urlParams.get('cat') || 'science';
 
     // Update header
     document.getElementById('categoryTitle').textContent = CATEGORIES[catKey] || 'Category';
-    document.getElementById('batchNameDisplay').textContent = BATCHES[batchId]?.name || 'Batch';
+    const batchName = BATCHES[batchId]?.name || 'Batch';
+    document.getElementById('batchNameDisplay').textContent = batchName;
     document.getElementById('backToBatch').href = `batch.html?batch=${batchId}`;
+    document.getElementById('backLink').href = `batch.html?batch=${batchId}`;
 
-    // Load materials
+    // ========================================
+    // LOAD MATERIALS
+    // ========================================
     function loadMaterials() {
         const pdfContainer = document.getElementById('pdfContent');
         const videoContainer = document.getElementById('videoContent');
@@ -69,6 +382,8 @@
             const data = snap.val();
             let pdfHtml = '';
             let videoHtml = '';
+            let hasPdf = false;
+            let hasVideo = false;
             
             if (data) {
                 Object.values(data).forEach(function(pdf) {
@@ -89,33 +404,39 @@
                         
                         if (pdf.type === 'pdf') {
                             pdfHtml += itemHtml;
+                            hasPdf = true;
                         } else {
                             videoHtml += itemHtml;
+                            hasVideo = true;
                         }
                     }
                 });
             }
 
-            pdfContainer.innerHTML = pdfHtml || '<div class="empty-state">📭 No PDFs available</div>';
-            videoContainer.innerHTML = videoHtml || '<div class="empty-state">🎬 No Videos available</div>';
+            pdfContainer.innerHTML = pdfHtml || '<div class="empty-state"><span class="icon">📭</span>No PDFs available</div>';
+            videoContainer.innerHTML = videoHtml || '<div class="empty-state"><span class="icon">🎬</span>No Videos available</div>';
         });
     }
 
-    // Tab switching
+    // ========================================
+    // TAB SWITCHING
+    // ========================================
     function showTab(type, el) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
         
-        document.getElementById('pdfContent').style.display = type === 'pdf' ? 'block' : 'none';
-        document.getElementById('videoContent').style.display = type === 'video' ? 'block' : 'none';
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById(type + 'Content').classList.add('active');
     }
 
     loadMaterials();
 
-    // Check maintenance
+    // ========================================
+    // CHECK MAINTENANCE
+    // ========================================
     db.ref('settings/maintenance').on('value', function(snap) {
         if (snap.val() === 'on') {
-            document.getElementById('app').innerHTML = `
+            document.querySelector('.main-container').innerHTML = `
                 <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0c0c2e,#1a1a3e);color:white;text-align:center;font-family:Arial;padding:20px;">
                     <div style="padding:50px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);max-width:500px;">
                         <div style="font-size:80px;margin-bottom:20px;">🔧</div>
@@ -127,10 +448,19 @@
         }
     });
 
+    // ========================================
+    // LOGOUT
+    // ========================================
     function logout() {
-        sessionStorage.removeItem('user_name');
+        localStorage.removeItem('sk_user_data');
         window.location.href = 'index.html';
     }
+
+    // ========================================
+    // EXPOSE FUNCTIONS
+    // ========================================
+    window.showTab = showTab;
+    window.logout = logout;
     </script>
 </body>
 </html>
