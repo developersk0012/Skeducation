@@ -11,7 +11,8 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- Header -->
+        
+        <!-- HEADER -->
         <div class="header">
             <div class="header-left">
                 <div class="logo-icon">SK</div>
@@ -22,21 +23,21 @@
             </div>
             <div class="header-right">
                 <span class="user-badge" id="userDisplay">👋 User</span>
-                <a href="index.html" class="icon-btn" title="Home">🏠</a>
+                <a href="index.html" class="icon-btn">🏠</a>
                 <button onclick="logout()" class="logout-link">Logout</button>
             </div>
         </div>
 
-        <!-- Announcements List -->
+        <!-- ANNOUNCEMENTS LIST -->
         <div id="announcementsList">
             <div class="loading">Loading announcements...</div>
         </div>
 
-        <!-- Reply Box -->
+        <!-- REPLY SECTION -->
         <div class="reply-section">
             <h3>💬 Reply to Admin</h3>
             <p style="color:#a5b4fc;font-size:14px;">Click the button below to send an email to admin</p>
-            <a href="mailto:satendrakkushwaha12@gmail.com" class="reply-btn-large">
+            <a href="mailto:satendrakkushwaha12@gmail.com" class="reply-btn-large" onclick="event.stopPropagation();">
                 ✉ Send Email to Admin
             </a>
         </div>
@@ -45,10 +46,12 @@
     <script>
     // Check login
     const userName = sessionStorage.getItem('user_name');
-    if (!userName) {
+    const user = getCurrentUser();
+    
+    if (!user) {
         window.location.href = 'index.html';
     }
-    document.getElementById('userDisplay').textContent = '👋 ' + userName;
+    document.getElementById('userDisplay').textContent = '👋 ' + user.name;
 
     // Load all announcements
     db.ref('announcements').orderByChild('timestamp').on('value', function(snap) {
@@ -72,7 +75,7 @@
                         </div>
                         <div class="ann-card-footer">
                             <button class="seen-btn" onclick="markAsSeen('${key}')">✓ Mark as Seen</button>
-                            <a href="mailto:${ADMIN_EMAIL}?subject=Reply to Announcement" class="reply-btn">✉ Reply</a>
+                            <a href="mailto:${ADMIN_EMAIL}?subject=Reply to Announcement" class="reply-btn" onclick="event.stopPropagation();">✉ Reply</a>
                         </div>
                     </div>
                 `;
@@ -84,14 +87,18 @@
         }
     });
 
-    // Mark as seen
+    // Mark as seen (NO EMAIL)
     function markAsSeen(id) {
-        const userName = sessionStorage.getItem('user_name') || 'Unknown';
-        sendSeenNotification(id, userName);
+        const user = getCurrentUser();
+        if (!user) return;
+        
+        logActivity(user.rollNo, 'seen', `Marked announcement #${id} as seen`);
         
         db.ref('seen_announcements').push({
             announcement_id: id,
-            user_name: userName,
+            user_name: user.name,
+            user_email: user.email,
+            roll_no: user.rollNo,
             timestamp: new Date().toISOString()
         });
         
@@ -115,9 +122,12 @@
     });
 
     function logout() {
-        sessionStorage.removeItem('user_name');
+        localStorage.removeItem('sk_user_data');
         window.location.href = 'index.html';
     }
+
+    window.markAsSeen = markAsSeen;
+    window.logout = logout;
     </script>
 </body>
 </html>
