@@ -15,7 +15,6 @@ const firebaseConfig = {
     appId: "1:916561394351:android:06445fc6d1de531e99f25a"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -26,21 +25,24 @@ const ADMIN_EMAIL = 'satendrakkushwaha12@gmail.com';
 const WEBSITE_URL = 'https://skeducation.vercel.app/';
 
 // ============================================
-// 3. BATCH DETAILS - FIXED
+// 3. BATCH DETAILS
 // ============================================
 const BATCHES = {
     '1': {
-        name: '🏆 Khazana Batch',
+        name: 'Khazana Batch',
+        icon: '🏆',
         image: 'https://i.ibb.co/7tJkXSRJ/IMG-20260820-221756-560.jpg',
         description: 'Morning Batch - Complete Study Material'
     },
     '2': {
-        name: '🌟 Disha Online Classes',
+        name: 'Disha Online Classes',
+        icon: '🌟',
         image: 'https://i.ibb.co/pBGDQq8m/1771220242-10th-batch.webp',
         description: 'Evening Batch - Expert Guidance'
     },
     '3': {
-        name: '🎯 Target Board',
+        name: 'Target Board',
+        icon: '🎯',
         image: 'https://i.ibb.co/KcDw1wwN/IMG-20260820-222646-987.jpg',
         description: 'Weekend Batch - Board Exam Preparation'
     }
@@ -50,11 +52,11 @@ const BATCHES = {
 // 4. CATEGORIES
 // ============================================
 const CATEGORIES = {
-    'science': '🔬 Science',
-    'math': '📐 Mathematics',
-    'hindi': '📝 Hindi',
-    'sanskrit': '🕉️ Sanskrit',
-    'sst': '🌍 Social Studies'
+    'science': 'Science',
+    'math': 'Mathematics',
+    'hindi': 'Hindi',
+    'sanskrit': 'Sanskrit',
+    'sst': 'Social Studies'
 };
 
 const CATEGORY_ICONS = {
@@ -70,30 +72,30 @@ const CATEGORY_ICONS = {
 // ============================================
 const SUBCATEGORIES = {
     'science': {
-        'physics': '⚡ Physics',
-        'chemistry': '🧪 Chemistry',
-        'biology': '🧬 Biology'
+        'physics': 'Physics',
+        'chemistry': 'Chemistry',
+        'biology': 'Biology'
     },
     'math': {
-        'objective': 'x² Objective',
-        'subjective': '📐 Subjective',
-        'notes': '📓 Notes'
+        'objective': 'Objective',
+        'subjective': 'Subjective',
+        'notes': 'Notes'
     },
     'hindi': {
-        'grammar': '📝 Grammar',
-        'book_notes': '📖 Book Notes',
-        'imp_question': '✍️ Important Questions'
+        'grammar': 'Grammar',
+        'book_notes': 'Book Notes',
+        'imp_question': 'Important Questions'
     },
     'sanskrit': {
-        'grammar': '📝 Grammar',
-        'book_notes': '📖 Book Notes',
-        'imp_question': '✍️ Important Questions'
+        'grammar': 'Grammar',
+        'book_notes': 'Book Notes',
+        'imp_question': 'Important Questions'
     },
     'sst': {
-        'history': '🏛️ History',
-        'geography': '🗺️ Geography',
-        'civics': '⚖️ Civics',
-        'economics': '📊 Economics'
+        'history': 'History',
+        'geography': 'Geography',
+        'civics': 'Civics',
+        'economics': 'Economics'
     }
 };
 
@@ -168,5 +170,5 @@ window.ADMIN_EMAIL = ADMIN_EMAIL;
 window.WEBSITE_URL = WEBSITE_URL;
 
 console.log('✅ SK Education Config Loaded!');
-console.log('📦 BATCHES:', Object.keys(BATCHES));
-console.log('📂 CATEGORIES:', Object.keys(CATEGORIES));
+console.log('📦 BATCHES:', BATCHES);
+console.log('📂 CATEGORIES:', CATEGORIES);
