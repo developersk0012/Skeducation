@@ -172,7 +172,7 @@
         /* ===== STATS ===== */
         .admin-stats {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -324,6 +324,21 @@
             background: rgba(247, 37, 133, 0.3);
         }
 
+        .btn-edit-small {
+            background: rgba(76, 201, 240, 0.15);
+            color: #4cc9f0;
+            border: 1px solid rgba(76, 201, 240, 0.15);
+            padding: 4px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .btn-edit-small:hover {
+            background: rgba(76, 201, 240, 0.3);
+        }
+
         .btn-warning {
             padding: 10px 25px;
             background: #ffc107;
@@ -354,6 +369,23 @@
             transform: scale(1.02);
         }
 
+        .btn-secondary {
+            padding: 12px 22px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #a5b4fc;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
         /* ===== LISTS ===== */
         .admin-list-item {
             display: flex;
@@ -381,51 +413,10 @@
             font-size: 12px;
         }
 
-        /* ===== USER FOLDERS ===== */
-        .user-folder {
-            background: rgba(67, 97, 238, 0.08);
-            border-radius: 12px;
-            padding: 15px 18px;
-            margin-bottom: 10px;
-            border-left: 3px solid #4361ee;
-            transition: all 0.3s ease;
-        }
-
-        .user-folder:hover {
-            background: rgba(67, 97, 238, 0.15);
-        }
-
-        .user-folder .folder-header {
+        .admin-list-item .item-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .user-folder .folder-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .user-folder .folder-detail {
-            font-size: 12px;
-            color: #a5b4fc;
-        }
-
-        .user-folder .status-badge {
-            background: rgba(76, 201, 240, 0.2);
-            color: #4cc9f0;
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
-
-        .user-folder .folder-date {
-            font-size: 12px;
-            color: #6a7a9e;
-            margin-top: 5px;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         /* ===== SETTINGS ===== */
@@ -485,9 +476,6 @@
         @media (max-width: 768px) {
             .admin-container {
                 padding: 15px;
-            }
-            .admin-stats {
-                grid-template-columns: 1fr;
             }
             .admin-tabs {
                 flex-direction: column;
@@ -571,6 +559,10 @@
                 <!-- STATS -->
                 <div class="admin-stats">
                     <div class="admin-stat-card">
+                        <div class="admin-stat-value" id="totalBatches">0</div>
+                        <div class="admin-stat-label">Total Batches</div>
+                    </div>
+                    <div class="admin-stat-card">
                         <div class="admin-stat-value" id="totalMaterials">0</div>
                         <div class="admin-stat-label">Total Materials</div>
                     </div>
@@ -587,6 +579,7 @@
                 <!-- TABS -->
                 <div class="admin-tabs">
                     <button class="admin-tab active" onclick="showAdminTab('add', this)">➕ Add Material</button>
+                    <button class="admin-tab" onclick="showAdminTab('batches', this)">🎓 Batches</button>
                     <button class="admin-tab" onclick="showAdminTab('announce', this)">📢 Announce</button>
                     <button class="admin-tab" onclick="showAdminTab('manage', this)">📋 Manage</button>
                     <button class="admin-tab" onclick="showAdminTab('seen', this)">👀 Seen Logs</button>
@@ -602,9 +595,6 @@
                                 <label>Batch *</label>
                                 <select id="matBatch" required>
                                     <option value="">Select Batch</option>
-                                    <option value="1">🏆 Khazana Batch</option>
-                                    <option value="2">🌟 Disha Online Classes</option>
-                                    <option value="3">🎯 Target Board</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -653,6 +643,39 @@
                     </div>
                 </div>
 
+                <!-- TAB: BATCHES (NEW) -->
+                <div id="tab-batches" class="admin-tab-content">
+                    <div class="admin-card">
+                        <h3 id="batchFormTitle">🎓 Add New Batch</h3>
+                        <form id="batchForm">
+                            <input type="hidden" id="batchEditId" value="">
+                            <div class="form-group">
+                                <label>Batch Name *</label>
+                                <input type="text" id="batchNameInput" placeholder="e.g. Summer Batch 2027" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Icon (Emoji) *</label>
+                                <input type="text" id="batchIconInput" placeholder="🏆" maxlength="4" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Banner Image URL *</label>
+                                <input type="url" id="batchImageInput" placeholder="https://example.com/banner.jpg" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description *</label>
+                                <input type="text" id="batchDescInput" placeholder="Short tagline for this batch" required>
+                            </div>
+                            <button type="submit" class="btn-primary" id="batchSubmitBtn">➕ Add Batch</button>
+                            <button type="button" class="btn-secondary" id="batchCancelEditBtn" style="display:none;margin-left:10px;">Cancel Edit</button>
+                            <div id="batchSuccess" class="success-msg">✅ Batch saved successfully!</div>
+                        </form>
+                    </div>
+                    <div class="admin-card">
+                        <h3>🎓 All Batches</h3>
+                        <div id="batchesList"><div class="empty-msg">Loading...</div></div>
+                    </div>
+                </div>
+
                 <!-- TAB: ANNOUNCE -->
                 <div id="tab-announce" class="admin-tab-content">
                     <div class="admin-card">
@@ -676,6 +699,9 @@
                 <div id="tab-manage" class="admin-tab-content">
                     <div class="admin-card">
                         <h3>📋 All Materials</h3>
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <input type="text" id="manageSearchInput" placeholder="🔍 Search materials by title...">
+                        </div>
                         <div id="manageList"><div class="empty-msg">Loading...</div></div>
                     </div>
                 </div>
@@ -697,6 +723,11 @@
                             <p>When enabled, users will see a maintenance page</p>
                             <button id="maintenanceToggle" class="btn-warning" onclick="toggleMaintenance()">Turn ON</button>
                             <div id="maintenanceStatus" style="margin-top:10px;color:#a5b4fc;">Current: OFF</div>
+                        </div>
+                        <div class="setting-item">
+                            <h4>💬 WhatsApp Channel Link</h4>
+                            <p>Ye link user panel mein "Join WhatsApp Channel" popup mein use hota hai. Isse change karne ke liye config.js mein WHATSAPP_GROUP_LINK edit karein.</p>
+                            <div style="color:#4cc9f0;font-size:13px;word-break:break-all;" id="waLinkDisplay"></div>
                         </div>
                     </div>
                 </div>
@@ -776,7 +807,7 @@
             const thumbnail = document.getElementById('matThumbnail').value;
 
             if (!batch_id || !category_id || !title || !file_path) {
-                alert('Please fill all required fields!');
+                showToast('Please fill all required fields!', 'error');
                 return;
             }
 
@@ -796,10 +827,150 @@
                 document.getElementById('addSuccess').style.display = 'block';
                 setTimeout(() => document.getElementById('addSuccess').style.display = 'none', 3000);
                 this.reset();
+                showToast('✅ Material added successfully!');
                 loadManageList();
                 loadStats();
+            }).catch(function(err) {
+                console.error(err);
+                showToast('❌ Kuch gadbad ho gayi', 'error');
             });
         });
+
+        // ========================================
+        // BATCHES — ADD / EDIT / DELETE (NEW)
+        // ========================================
+        let adminBatchesCache = {};
+
+        function populateBatchDropdown(batches) {
+            const select = document.getElementById('matBatch');
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">Select Batch</option>';
+            Object.keys(batches).sort(function(a, b) { return Number(a) - Number(b); }).forEach(function(id) {
+                const b = batches[id];
+                select.innerHTML += `<option value="${id}">${b.icon} ${b.name}</option>`;
+            });
+            if (currentVal) select.value = currentVal;
+        }
+
+        function loadBatchesList(batches) {
+            adminBatchesCache = batches;
+            const container = document.getElementById('batchesList');
+            const keys = Object.keys(batches).sort(function(a, b) { return Number(a) - Number(b); });
+
+            if (!keys.length) {
+                container.innerHTML = '<div class="empty-msg">No batches yet — upar se ek add karein</div>';
+                return;
+            }
+
+            let html = '';
+            keys.forEach(function(id) {
+                const b = batches[id];
+                html += `
+                    <div class="admin-list-item">
+                        <div>
+                            <strong>${b.icon} ${b.name}</strong>
+                            <small>${b.description}</small>
+                        </div>
+                        <div class="item-actions">
+                            <button onclick="editBatch('${id}')" class="btn-edit-small">✏️ Edit</button>
+                            <button onclick="deleteBatch('${id}')" class="btn-danger-small">✕ Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function refreshBatchesUI() {
+            return loadBatches().then(function(batches) {
+                populateBatchDropdown(batches);
+                loadBatchesList(batches);
+                document.getElementById('totalBatches').textContent = Object.keys(batches).length;
+                return batches;
+            });
+        }
+
+        document.getElementById('batchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('batchEditId').value;
+            const data = {
+                name: document.getElementById('batchNameInput').value.trim(),
+                icon: document.getElementById('batchIconInput').value.trim(),
+                image: document.getElementById('batchImageInput').value.trim(),
+                description: document.getElementById('batchDescInput').value.trim()
+            };
+
+            if (!data.name || !data.icon || !data.image || !data.description) {
+                showToast('Please fill all fields!', 'error');
+                return;
+            }
+
+            const savePromise = editId
+                ? db.ref('batches/' + editId).update(data)
+                : loadBatches().then(function(batches) {
+                    const newId = getNextBatchId(batches);
+                    return db.ref('batches/' + newId).set(data);
+                });
+
+            savePromise.then(function() {
+                document.getElementById('batchSuccess').style.display = 'block';
+                setTimeout(() => document.getElementById('batchSuccess').style.display = 'none', 3000);
+                showToast(editId ? '✅ Batch updated!' : '✅ New batch add ho gaya!');
+                cancelBatchEdit();
+                refreshBatchesUI();
+            }).catch(function(err) {
+                console.error(err);
+                showToast('❌ Kuch gadbad ho gayi', 'error');
+            });
+        });
+
+        function editBatch(id) {
+            const batch = adminBatchesCache[id];
+            if (!batch) return;
+            document.getElementById('batchEditId').value = id;
+            document.getElementById('batchNameInput').value = batch.name;
+            document.getElementById('batchIconInput').value = batch.icon;
+            document.getElementById('batchImageInput').value = batch.image;
+            document.getElementById('batchDescInput').value = batch.description;
+            document.getElementById('batchFormTitle').textContent = '✏️ Edit Batch: ' + batch.name;
+            document.getElementById('batchSubmitBtn').textContent = '💾 Update Batch';
+            document.getElementById('batchCancelEditBtn').style.display = 'inline-block';
+            document.getElementById('tab-batches').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelBatchEdit() {
+            document.getElementById('batchForm').reset();
+            document.getElementById('batchEditId').value = '';
+            document.getElementById('batchFormTitle').textContent = '🎓 Add New Batch';
+            document.getElementById('batchSubmitBtn').textContent = '➕ Add Batch';
+            document.getElementById('batchCancelEditBtn').style.display = 'none';
+        }
+        document.getElementById('batchCancelEditBtn').addEventListener('click', cancelBatchEdit);
+
+        function deleteBatch(id) {
+            db.ref('pdfs').once('value').then(function(snap) {
+                const data = snap.val();
+                let hasContent = false;
+                if (data) {
+                    hasContent = Object.values(data).some(function(pdf) {
+                        return pdf && String(pdf.batch_id) === String(id);
+                    });
+                }
+                const msg = hasContent
+                    ? '⚠️ Is batch mein study materials maujood hain! Delete karne se wo materials "Unknown" batch ke andar reh jaayenge. Phir bhi delete karna hai?'
+                    : 'Delete this batch?';
+                if (confirm(msg)) {
+                    db.ref('batches/' + id).remove().then(function() {
+                        showToast('🗑️ Batch delete ho gaya');
+                        refreshBatchesUI();
+                    }).catch(function(err) {
+                        console.error(err);
+                        showToast('❌ Delete nahi ho paya', 'error');
+                    });
+                }
+            });
+        }
 
         // ========================================
         // SEND ANNOUNCEMENT
@@ -809,7 +980,7 @@
             const message = document.getElementById('announceMsg').value;
 
             if (!message) {
-                alert('Please enter a message!');
+                showToast('Please enter a message!', 'error');
                 return;
             }
 
@@ -822,8 +993,12 @@
                 document.getElementById('announceSuccess').style.display = 'block';
                 setTimeout(() => document.getElementById('announceSuccess').style.display = 'none', 3000);
                 document.getElementById('announceMsg').value = '';
+                showToast('✅ Announcement sent!');
                 loadAnnounceList();
                 loadStats();
+            }).catch(function(err) {
+                console.error(err);
+                showToast('❌ Kuch gadbad ho gayi', 'error');
             });
         });
 
@@ -831,52 +1006,81 @@
         // LOAD ADMIN DATA
         // ========================================
         function loadAdminData() {
+            refreshBatchesUI();
             loadManageList();
             loadAnnounceList();
             loadSeenList();
             loadStats();
+            document.getElementById('waLinkDisplay').textContent = WHATSAPP_GROUP_LINK;
         }
 
         // ========================================
-        // LOAD MANAGE LIST
+        // LOAD MANAGE LIST (ab search filter ke saath)
         // ========================================
+        let allMaterials = [];
+
+        function renderManageList(filterText) {
+            filterText = (filterText || '').toLowerCase().trim();
+            const list = filterText
+                ? allMaterials.filter(m => (m.item.title || '').toLowerCase().includes(filterText))
+                : allMaterials;
+
+            let html = '';
+            list.forEach(function(entry) {
+                const item = entry.item;
+                const key = entry.key;
+                const batchName = (adminBatchesCache[item.batch_id] && adminBatchesCache[item.batch_id].name) || 'Unknown';
+                const catName = CATEGORIES[item.category_id] || 'Unknown';
+
+                html += `
+                    <div class="admin-list-item">
+                        <div>
+                            <strong>${item.title}</strong>
+                            <small>${batchName} • ${catName} • ${item.type}</small>
+                        </div>
+                        <button onclick="deleteMaterial('${key}')" class="btn-danger-small">✕ Delete</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('manageList').innerHTML = html || `<div class="empty-msg">${filterText ? 'No matching materials found' : 'No materials uploaded'}</div>`;
+        }
+
         function loadManageList() {
             db.ref('pdfs').orderByChild('timestamp').on('value', function(snap) {
                 const data = snap.val();
-                let html = '';
+                allMaterials = [];
 
                 if (data) {
                     const keys = Object.keys(data).reverse();
                     keys.forEach(function(key) {
-                        const item = data[key];
-                        const batchName = BATCHES[item.batch_id]?.name || 'Unknown';
-                        const catName = CATEGORIES[item.category_id] || 'Unknown';
-
-                        html += `
-                            <div class="admin-list-item">
-                                <div>
-                                    <strong>${item.title}</strong>
-                                    <small>${batchName} • ${catName} • ${item.type}</small>
-                                </div>
-                                <button onclick="deleteMaterial('${key}')" class="btn-danger-small">✕ Delete</button>
-                            </div>
-                        `;
+                        allMaterials.push({ key: key, item: data[key] });
                     });
-                } else {
-                    html = '<div class="empty-msg">No materials uploaded</div>';
                 }
 
-                document.getElementById('manageList').innerHTML = html;
+                renderManageList(document.getElementById('manageSearchInput').value);
+            }, function(err) {
+                console.error('loadManageList error:', err);
+                document.getElementById('manageList').innerHTML = '<div class="empty-msg">❌ Error loading materials</div>';
             });
         }
+
+        document.getElementById('manageSearchInput').addEventListener('input', function() {
+            renderManageList(this.value);
+        });
 
         // ========================================
         // DELETE MATERIAL
         // ========================================
         function deleteMaterial(id) {
             if (confirm('Delete this material?')) {
-                db.ref('pdfs/' + id).remove();
-                loadStats();
+                db.ref('pdfs/' + id).remove().then(function() {
+                    showToast('🗑️ Material deleted');
+                    loadStats();
+                }).catch(function(err) {
+                    console.error(err);
+                    showToast('❌ Delete nahi ho paya', 'error');
+                });
             }
         }
 
@@ -907,6 +1111,9 @@
                 }
 
                 document.getElementById('announceList').innerHTML = html;
+            }, function(err) {
+                console.error('loadAnnounceList error:', err);
+                document.getElementById('announceList').innerHTML = '<div class="empty-msg">❌ Error loading announcements</div>';
             });
         }
 
@@ -915,8 +1122,13 @@
         // ========================================
         function deleteAnnouncement(id) {
             if (confirm('Delete this announcement?')) {
-                db.ref('announcements/' + id).remove();
-                loadStats();
+                db.ref('announcements/' + id).remove().then(function() {
+                    showToast('🗑️ Announcement deleted');
+                    loadStats();
+                }).catch(function(err) {
+                    console.error(err);
+                    showToast('❌ Delete nahi ho paya', 'error');
+                });
             }
         }
 
@@ -947,6 +1159,9 @@
                 }
 
                 document.getElementById('seenList').innerHTML = html;
+            }, function(err) {
+                console.error('loadSeenList error:', err);
+                document.getElementById('seenList').innerHTML = '<div class="empty-msg">❌ Error loading seen logs</div>';
             });
         }
 
@@ -982,9 +1197,14 @@
         // TOGGLE MAINTENANCE
         // ========================================
         function toggleMaintenance() {
-            db.ref('settings/maintenance').once('value', function(snap) {
+            db.ref('settings/maintenance').once('value').then(function(snap) {
                 const current = snap.val() === 'on' ? 'off' : 'on';
-                db.ref('settings/maintenance').set(current);
+                return db.ref('settings/maintenance').set(current);
+            }).then(function() {
+                showToast('✅ Maintenance mode updated');
+            }).catch(function(err) {
+                console.error(err);
+                showToast('❌ Kuch gadbad ho gayi', 'error');
             });
         }
 
@@ -1004,6 +1224,8 @@
         window.toggleMaintenance = toggleMaintenance;
         window.logoutAdmin = logoutAdmin;
         window.showAdminTab = showAdminTab;
+        window.editBatch = editBatch;
+        window.deleteBatch = deleteBatch;
     </script>
 </body>
 </html>

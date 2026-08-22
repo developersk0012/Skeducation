@@ -111,30 +111,30 @@
     document.getElementById('userDisplay').textContent = '👋 ' + userName;
 
     // ========================================
-    // GET BATCH
+    // GET BATCH (ab Firebase se — naye admin-added batches ke liye bhi kaam karega)
     // ========================================
     const urlParams = new URLSearchParams(window.location.search);
     const batchId = urlParams.get('batch') || '1';
-    const batch = BATCHES[batchId];
 
-    if (!batch) {
-        document.getElementById('batchTitle').textContent = 'Batch Not Found';
-        document.getElementById('batchName').textContent = 'Error';
-        document.getElementById('batchDesc').textContent = 'Batch not found';
-    } else {
-        document.getElementById('batchTitle').textContent = batch.icon + ' ' + batch.name;
-        document.getElementById('batchImage').src = batch.image;
-        document.getElementById('batchName').textContent = batch.icon + ' ' + batch.name;
-        document.getElementById('batchDesc').textContent = batch.description;
-    }
+    loadBatches().then(function(batches) {
+        const batch = batches[batchId];
+
+        if (!batch) {
+            document.getElementById('batchTitle').textContent = 'Batch Not Found';
+            document.getElementById('batchName').textContent = 'Error';
+            document.getElementById('batchDesc').textContent = 'Ye batch exist nahi karta.';
+        } else {
+            document.getElementById('batchTitle').textContent = batch.icon + ' ' + batch.name;
+            document.getElementById('batchImage').src = batch.image;
+            document.getElementById('batchName').textContent = batch.icon + ' ' + batch.name;
+            document.getElementById('batchDesc').textContent = batch.description;
+        }
+
+        loadCategories();
+    });
 
     // ========================================
     // LOAD CATEGORIES
-    // Fixed: pehle 'orderByChild(batch_id).equalTo(...)' use ho raha
-    // tha jo Firebase index na hone par ya batch_id string/number
-    // mismatch hone par silently fail ho jaata tha. Ab hum poora
-    // 'pdfs' node fetch karke client-side filter karte hain (chhoti
-    // dataset ke liye safe aur reliable) + proper error handling.
     // ========================================
     function loadCategories() {
         const grid = document.getElementById('categoryGrid');
@@ -150,7 +150,6 @@
 
             if (data) {
                 Object.values(data).forEach(function(pdf) {
-                    // Loose comparison handles both string ("1") and number (1) batch_id
                     if (pdf && String(pdf.batch_id) === String(batchId) && pdf.category_id) {
                         categoryCount[pdf.category_id] = (categoryCount[pdf.category_id] || 0) + 1;
                     }
@@ -179,8 +178,6 @@
             showDbError(grid, err);
         });
     }
-
-    loadCategories();
 
     // ========================================
     // CHECK MAINTENANCE

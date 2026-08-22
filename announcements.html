@@ -177,9 +177,10 @@
         }).then(function() {
             const el = document.getElementById('ann-' + id);
             if (el) el.style.opacity = '0.5';
+            showToast('✅ Marked as seen!');
         }).catch(function(err) {
             console.error('Mark as seen failed:', err);
-            alert('❌ Kuch gadbad ho gayi, phir try karein.');
+            showToast('❌ Kuch gadbad ho gayi, phir try karein.', 'error');
         });
     }
 

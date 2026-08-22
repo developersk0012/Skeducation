@@ -39,6 +39,7 @@
         .user-badge { background: rgba(67,97,238,0.2); padding: 6px 18px; border-radius: 50px; font-size: 14px; color: #a5b4fc; border: 1px solid rgba(67,97,238,0.15); }
         .icon-btn { background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 50px; text-decoration: none; color: #a5b4fc; font-size: 18px; transition: all .2s; }
         .icon-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+        .icon-btn.wa-icon-btn { color: #25d366; }
         .logout-link { background: none; border: none; color: #f72585; font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 50px; transition: all .2s; }
         .logout-link:hover { background: rgba(247,37,133,0.15); }
 
@@ -55,13 +56,19 @@
         .section-title { font-size: 26px; font-weight: 700; margin: 30px 0 20px; background: linear-gradient(90deg, #4cc9f0, #f72585); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .batch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 15px; }
-        .batch-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); transition: all 0.4s; text-decoration: none; color: white; }
+        .batch-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); transition: all 0.4s; text-decoration: none; color: white; opacity: 0; animation: cardIn .4s ease forwards; }
         .batch-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); border-color: rgba(67,97,238,0.3); }
-        .batch-card img { width: 100%; height: 200px; object-fit: cover; }
+        .batch-card img { width: 100%; height: 200px; object-fit: cover; background: rgba(255,255,255,0.05); }
         .batch-card .batch-info { padding: 18px 20px 22px; }
         .batch-card .batch-info h3 { font-size: 18px; margin-bottom: 4px; }
         .batch-card .batch-info p { color: #a5b4fc; font-size: 14px; margin-bottom: 8px; }
         .batch-badge { display: inline-block; background: rgba(67,97,238,0.2); padding: 3px 14px; border-radius: 50px; font-size: 12px; color: #a5b4fc; }
+
+        @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .loading { text-align: center; padding: 50px 20px; color: #a5b4fc; }
+        .spinner { width: 40px; height: 40px; margin: 0 auto 14px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #4cc9f0; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
             .main-container { padding: 15px; }
@@ -108,6 +115,7 @@
                 </div>
                 <div class="header-right">
                     <span class="user-badge" id="userDisplay">👋 User</span>
+                    <a id="waLinkBtn" href="#" target="_blank" class="icon-btn wa-icon-btn" title="Join WhatsApp Channel">💬</a>
                     <a href="announcements.html" class="icon-btn">📢</a>
                     <button onclick="logout()" class="logout-link">Logout</button>
                 </div>
@@ -118,31 +126,8 @@
 
             <!-- BATCHES -->
             <h2 class="section-title">📚 Select Your Batch</h2>
-            <div class="batch-grid">
-                <a href="batch.html?batch=1" class="batch-card">
-                    <img src="https://i.ibb.co/7tJkXSRJ/IMG-20260820-221756-560.jpg" alt="Khazana Batch">
-                    <div class="batch-info">
-                        <h3>🏆 Khazana Batch</h3>
-                        <p>Morning Batch - Complete Study Material</p>
-                        <span class="batch-badge">📚 All Subjects</span>
-                    </div>
-                </a>
-                <a href="batch.html?batch=2" class="batch-card">
-                    <img src="https://i.ibb.co/pBGDQq8m/1771220242-10th-batch.webp" alt="Disha Online Classes">
-                    <div class="batch-info">
-                        <h3>🌟 Disha Online Classes</h3>
-                        <p>Evening Batch - Expert Guidance</p>
-                        <span class="batch-badge">📚 All Subjects</span>
-                    </div>
-                </a>
-                <a href="batch.html?batch=3" class="batch-card">
-                    <img src="https://i.ibb.co/KcDw1wwN/IMG-20260820-222646-987.jpg" alt="Target Board">
-                    <div class="batch-info">
-                        <h3>🎯 Target Board</h3>
-                        <p>Weekend Batch - Board Exam Preparation</p>
-                        <span class="batch-badge">📚 All Subjects</span>
-                    </div>
-                </a>
+            <div class="batch-grid" id="batchGrid">
+                <div class="loading"><div class="spinner"></div>⏳ Loading batches...</div>
             </div>
             
         </div>
@@ -158,8 +143,14 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('userDisplay').textContent = '👋 ' + userName;
+        document.getElementById('waLinkBtn').href = WHATSAPP_GROUP_LINK;
         loadAnnouncements();
+        loadBatchGrid();
         checkMaintenance();
+
+        // WhatsApp popup — user panel khulte hi (thodi delay ke saath, taaki
+        // page pehle render ho jaaye aur popup achanak na tapke)
+        setTimeout(showWhatsAppPopup, 900);
     } else {
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
@@ -187,9 +178,45 @@
     });
 
     // ========================================
+    // LOAD BATCH GRID (ab Firebase se dynamic — admin panel se
+    // naya batch add karte hi yahan turant dikhega)
+    // ========================================
+    function loadBatchGrid() {
+        const grid = document.getElementById('batchGrid');
+        const timer = withLoadingTimeout(grid);
+
+        loadBatches().then(function(batches) {
+            clearTimeout(timer);
+            const keys = Object.keys(batches).sort(function(a, b) { return Number(a) - Number(b); });
+
+            if (!keys.length) {
+                grid.innerHTML = '<div style="color:#a5b4fc;text-align:center;padding:40px;grid-column:1/-1;">📭 Abhi koi batch available nahi hai</div>';
+                return;
+            }
+
+            let html = '';
+            keys.forEach(function(id, i) {
+                const b = batches[id];
+                html += `
+                    <a href="batch.html?batch=${id}" class="batch-card" style="animation-delay:${i * 0.06}s">
+                        <img src="${b.image}" alt="${b.name}" onerror="this.src='https://via.placeholder.com/400x200/4361ee/white?text=SK+Education'">
+                        <div class="batch-info">
+                            <h3>${b.icon} ${b.name}</h3>
+                            <p>${b.description}</p>
+                            <span class="batch-badge">📚 All Subjects</span>
+                        </div>
+                    </a>
+                `;
+            });
+            grid.innerHTML = html;
+        }).catch(function(err) {
+            clearTimeout(timer);
+            showDbError(grid, err);
+        });
+    }
+
+    // ========================================
     // LOAD ANNOUNCEMENTS
-    // Fixed: error callback add kiya taaki agar permission ya
-    // connection issue ho to box khaali na dikhe, error clear ho.
     // ========================================
     function loadAnnouncements() {
         const box = document.getElementById('announcementBox');
@@ -231,13 +258,14 @@
             announcement_id: id,
             user_name: name,
             timestamp: new Date().toISOString()
+        }).then(function() {
+            const el = document.getElementById('ann-' + id);
+            if (el) el.style.opacity = '0.5';
+            showToast('✅ Marked as seen!');
         }).catch(function(err) {
             console.error('Mark as seen failed:', err);
-            alert('❌ Kuch gadbad ho gayi, phir try karein.');
+            showToast('❌ Kuch gadbad ho gayi, phir try karein.', 'error');
         });
-        
-        const el = document.getElementById('ann-' + id);
-        if (el) el.style.opacity = '0.5';
     }
 
     // ========================================
